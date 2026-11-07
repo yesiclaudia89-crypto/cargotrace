@@ -4,7 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Carrier;
 use App\Models\Location;
+use App\Models\Shipment;
+use App\Models\ShipmentException;
+use App\Models\ShipmentItem;
+use App\Models\TrackingEvent;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -142,5 +147,196 @@ class DatabaseSeeder extends Seeder
         foreach ($locations as $loc) {
             Location::firstOrCreate(['code' => $loc['code']], $loc);
         }
+
+        // 6. Realistic Shipments (Slide 4, 6, 8, 11)
+        $customer = User::where('role', 'customer')->first();
+        $operator = User::where('role', 'operator')->first();
+        $priok = Location::where('code', 'IDTPP')->first();
+        $singapore = Location::where('code', 'SGSIN')->first();
+        $rotterdam = Location::where('code', 'NLRTM')->first();
+        $samudera = Carrier::where('code', 'SMDR')->first();
+        $maersk = Carrier::where('code', 'MAEU')->first();
+        $meratus = Carrier::where('code', 'MRTS')->first();
+
+        // Shipment 1: In Transit with Exception (Weather Delay)
+        $s1 = Shipment::firstOrCreate(
+            ['shipment_number' => 'CT-2026-001'],
+            [
+                'user_id' => $customer->id,
+                'carrier_id' => $samudera->id,
+                'origin_id' => $priok->id,
+                'destination_id' => $singapore->id,
+                'cargo_type' => 'Container (FCL 20ft)',
+                'total_weight' => 14200.00,
+                'total_volume' => 33.20,
+                'status' => 'IN_TRANSIT',
+                'payment_status' => 'PAID',
+                'freight_cost' => 15000000.00,
+                'payment_reference' => 'MIDTRANS-SETTLEMENT-001',
+                'expected_departure' => Carbon::now()->subDays(2),
+                'expected_arrival' => Carbon::now()->addHours(12),
+                'estimated_arrival' => Carbon::now()->addHours(20), // 8h delay
+                'delay_hours' => 8,
+                'is_delayed' => true,
+                'delay_severity' => 'MEDIUM',
+                'notes' => 'Shipment contains export textile machinery.',
+            ]
+        );
+
+        ShipmentItem::firstOrCreate(
+            ['shipment_id' => $s1->id, 'item_name' => 'Industrial Textile Weaving Machine'],
+            [
+                'quantity' => 2,
+                'weight_kg' => 7100.00,
+                'dimensions' => '240x180x200 cm',
+                'hs_code' => '8448.19.00',
+            ]
+        );
+
+        // Tracking events for Shipment 1
+        $eventsS1 = [
+            [
+                'shipment_id' => $s1->id,
+                'location_id' => $priok->id,
+                'created_by' => $customer->id,
+                'event_type' => 'ORDER_CREATED',
+                'status' => 'CREATED',
+                'location_name' => 'Tanjung Priok Port, Jakarta',
+                'latitude' => -6.1017000,
+                'longitude' => 106.8833000,
+                'description' => 'Shipment booking created by customer.',
+                'event_time' => Carbon::now()->subDays(3),
+            ],
+            [
+                'shipment_id' => $s1->id,
+                'location_id' => $priok->id,
+                'created_by' => $operator->id,
+                'event_type' => 'PAYMENT_CONFIRMED',
+                'status' => 'BOOKED',
+                'location_name' => 'Tanjung Priok Port, Jakarta',
+                'latitude' => -6.1017000,
+                'longitude' => 106.8833000,
+                'description' => 'Payment settled via Midtrans Sandbox. Booking confirmed.',
+                'event_time' => Carbon::now()->subDays(3)->addHours(2),
+            ],
+            [
+                'shipment_id' => $s1->id,
+                'location_id' => $priok->id,
+                'created_by' => $operator->id,
+                'event_type' => 'CARGO_LOADED',
+                'status' => 'PICKED_UP',
+                'location_name' => 'Tanjung Priok Container Terminal 1',
+                'latitude' => -6.1025000,
+                'longitude' => 106.8845000,
+                'description' => 'Container loaded onto vessel MV Samudera Perkasa.',
+                'event_time' => Carbon::now()->subDays(2),
+            ],
+            [
+                'shipment_id' => $s1->id,
+                'location_id' => $priok->id,
+                'created_by' => $operator->id,
+                'event_type' => 'DEPARTED_ORIGIN',
+                'status' => 'IN_TRANSIT',
+                'location_name' => 'Java Sea / Karimata Strait',
+                'latitude' => -3.2000000,
+                'longitude' => 107.5000000,
+                'description' => 'Vessel en route to Port of Singapore. Reduced speed due to high swell.',
+                'event_time' => Carbon::now()->subHours(14),
+            ],
+        ];
+
+        foreach ($eventsS1 as $ev) {
+            TrackingEvent::firstOrCreate(
+                ['shipment_id' => $ev['shipment_id'], 'event_type' => $ev['event_type']],
+                $ev
+            );
+        }
+
+        // Exception for Shipment 1: WEATHER_DELAY
+        ShipmentException::firstOrCreate(
+            ['shipment_id' => $s1->id, 'exception_type' => 'WEATHER_DELAY'],
+            [
+                'logged_by' => $operator->id,
+                'severity' => 'MEDIUM',
+                'status' => 'INVESTIGATING',
+                'description' => 'High wave advisory (>2.5m) in Karimata Strait caused 8-hour navigational detour.',
+                'resolution_notes' => 'Vessel captain navigated alternate route; revised ETA communicated to consignee.',
+                'logged_at' => Carbon::now()->subHours(10),
+            ]
+        );
+
+        // Shipment 2: Delivered & On-Time
+        $s2 = Shipment::firstOrCreate(
+            ['shipment_number' => 'CT-2026-002'],
+            [
+                'user_id' => $customer->id,
+                'carrier_id' => $maersk->id,
+                'origin_id' => $priok->id,
+                'destination_id' => $rotterdam->id,
+                'cargo_type' => 'Electronics & Solar Cells',
+                'total_weight' => 8600.00,
+                'total_volume' => 24.50,
+                'status' => 'DELIVERED',
+                'payment_status' => 'PAID',
+                'freight_cost' => 45000000.00,
+                'payment_reference' => 'MIDTRANS-SETTLEMENT-002',
+                'expected_departure' => Carbon::now()->subDays(20),
+                'expected_arrival' => Carbon::now()->subDays(1),
+                'estimated_arrival' => Carbon::now()->subDays(1),
+                'delay_hours' => 0,
+                'is_delayed' => false,
+                'delay_severity' => 'NONE',
+                'notes' => 'Delivered in good condition with sign-off POD.',
+            ]
+        );
+
+        ShipmentItem::firstOrCreate(
+            ['shipment_id' => $s2->id, 'item_name' => 'Monocrystalline Solar PV Panels'],
+            [
+                'quantity' => 120,
+                'weight_kg' => 8600.00,
+                'dimensions' => '200x100x4 cm',
+                'hs_code' => '8541.43.00',
+            ]
+        );
+
+        TrackingEvent::firstOrCreate(
+            ['shipment_id' => $s2->id, 'event_type' => 'CARGO_DELIVERED'],
+            [
+                'location_id' => $rotterdam->id,
+                'created_by' => $operator->id,
+                'status' => 'DELIVERED',
+                'location_name' => 'Port of Rotterdam, Distripark Maasvlakte',
+                'latitude' => 51.9547000,
+                'longitude' => 4.1378000,
+                'description' => 'Cargo successfully delivered and signed by consignee warehouse.',
+                'event_time' => Carbon::now()->subDays(1),
+            ]
+        );
+
+        // Shipment 3: Created (Waiting for Payment Gateway!)
+        Shipment::firstOrCreate(
+            ['shipment_number' => 'CT-2026-003'],
+            [
+                'user_id' => $customer->id,
+                'carrier_id' => $meratus->id,
+                'origin_id' => $priok->id,
+                'destination_id' => $singapore->id,
+                'cargo_type' => 'Agricultural Commodity (Robusta Coffee Beans)',
+                'total_weight' => 18000.00,
+                'total_volume' => 38.00,
+                'status' => 'CREATED',
+                'payment_status' => 'UNPAID',
+                'freight_cost' => 12500000.00,
+                'payment_reference' => null,
+                'expected_departure' => Carbon::now()->addDays(2),
+                'expected_arrival' => Carbon::now()->addDays(5),
+                'estimated_arrival' => Carbon::now()->addDays(5),
+                'delay_hours' => 0,
+                'is_delayed' => false,
+                'delay_severity' => 'NONE',
+                'notes' => 'Awaiting payment from customer to confirm booking.',
+            ]
+        );
     }
 }
