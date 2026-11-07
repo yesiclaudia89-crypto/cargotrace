@@ -101,14 +101,17 @@
                                 <th class="px-6 py-3">Status Kargo</th>
                                 <th class="px-6 py-3">Pembayaran</th>
                                 <th class="px-6 py-3">Kondisi Jadwal (ETA)</th>
+                                <th class="px-6 py-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-gray-700">
                             @forelse ($recentShipments as $shipment)
                                 <tr class="hover:bg-gray-50/80 transition-colors">
                                     <!-- Shipment Number -->
-                                    <td class="px-6 py-4 font-mono font-bold text-indigo-600">
-                                        {{ $shipment->shipment_number }}
+                                    <td class="px-6 py-4">
+                                        <a href="{{ route('shipments.show', $shipment) }}" class="font-mono font-bold text-blue-600 hover:underline">
+                                            {{ $shipment->shipment_number }}
+                                        </a>
                                         <div class="text-xs font-sans text-gray-400 font-normal">
                                             {{ $shipment->cargo_type }}
                                         </div>
@@ -179,6 +182,14 @@
                                         <div class="text-xs text-gray-500 mt-1">
                                             ETA: {{ $shipment->estimated_arrival ? $shipment->estimated_arrival->format('d M Y, H:i') : '-' }}
                                         </div>
+                                    </td>
+
+                                    <!-- Action Button -->
+                                    <td class="px-6 py-4 text-right">
+                                        <a href="{{ route('shipments.show', $shipment) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-sm transition">
+                                            <span>Lihat Peta</span>
+                                            <span>🗺️</span>
+                                        </a>
                                     </td>
                                 </tr>
                             @empty

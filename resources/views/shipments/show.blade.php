@@ -147,7 +147,7 @@
                         </div>
 
                         <!-- MAP DIV -->
-                        <div id="map" class="w-full h-96 rounded-xl border border-slate-200 z-10"></div>
+                        <div id="map" style="height: 420px; min-height: 420px; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1;"></div>
 
                         <!-- Legend below map -->
                         <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-600 px-1">
