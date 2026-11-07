@@ -11,12 +11,25 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
-            </div>
+<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+        📊 {{ __('Dashboard') }}
+    </x-nav-link>
+
+    <x-nav-link :href="route('shipments.index')" :active="request()->routeIs('shipments.*')">
+        🚢 {{ __('Shipments') }}
+    </x-nav-link>
+
+    @if (Auth::user()->isAdmin())
+        <x-nav-link :href="route('carriers.index')" :active="request()->routeIs('carriers.*')">
+            🏢 {{ __('Carriers') }}
+        </x-nav-link>
+
+        <x-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
+            📍 {{ __('Locations') }}
+        </x-nav-link>
+    @endif
+</div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
