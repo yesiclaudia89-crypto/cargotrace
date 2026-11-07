@@ -19,30 +19,28 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'role',
-        'password',
-    ];
+    'name',
+    'email',
+    'phone',
+    'role',
+    'password',
+];
 
-    /**
-     * Helper methods for Role-Based Access Control (RBAC)
-     */
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
+// Helper methods untuk cek role (Slide 5)
+public function isAdmin(): bool
+{
+    return $this->role === 'admin';
+}
 
-    public function isOperator(): bool
-    {
-        return $this->role === 'operator';
-    }
+public function isOperator(): bool
+{
+    return $this->role === 'operator';
+}
 
-    public function isCustomer(): bool
-    {
-        return $this->role === 'customer';
-    }
+public function isCustomer(): bool
+{
+    return $this->role === 'customer';
+}
 
     /**
      * The attributes that should be hidden for serialization.
