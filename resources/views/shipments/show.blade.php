@@ -134,20 +134,83 @@
                 <!-- LEFT: LEAFLET MAP & SHIPMENT SPECS (2 Cols) -->
                 <div class="lg:col-span-2 space-y-6">
 
+                    <!-- LIVE MARITIME WEATHER CARD (External API Integration - Slide 9 & 15) -->
+                    @if (isset($weather))
+                        <div class="bg-gradient-to-r from-sky-900 to-indigo-950 text-white p-5 rounded-xl shadow-sm border border-sky-800">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-sky-800/80">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl">🌊</span>
+                                    <h4 class="font-bold text-sm tracking-wide text-sky-200 uppercase">
+                                        Cuaca Maritim Terkini (External API)
+                                    </h4>
+                                </div>
+                                <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-medium">
+                                    Laravel HTTP Client • Open-Meteo
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-xs">
+                                <div class="bg-sky-950/60 p-3 rounded-lg border border-sky-800/50">
+                                    <span class="text-sky-300 block text-[11px]">Kondisi Cuaca:</span>
+                                    <strong class="text-white text-xs mt-0.5 block leading-tight">{{ $weather['condition'] }}</strong>
+                                </div>
+                                <div class="bg-sky-950/60 p-3 rounded-lg border border-sky-800/50">
+                                    <span class="text-sky-300 block text-[11px]">Suhu Udara Laut:</span>
+                                    <strong class="text-amber-300 text-sm mt-0.5 block font-mono">{{ $weather['temperature'] ?? '-' }} °C</strong>
+                                </div>
+                                <div class="bg-sky-950/60 p-3 rounded-lg border border-sky-800/50">
+                                    <span class="text-sky-300 block text-[11px]">Kecepatan Angin:</span>
+                                    <strong class="text-emerald-300 text-sm mt-0.5 block font-mono">{{ $weather['windspeed'] ?? '-' }} km/jam</strong>
+                                </div>
+                                <div class="bg-sky-950/60 p-3 rounded-lg border border-sky-800/50">
+                                    <span class="text-sky-300 block text-[11px]">Arah Angin:</span>
+                                    <strong class="text-white text-sm mt-0.5 block font-mono">{{ $weather['winddirection'] ?? '-' }}°</strong>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-sky-400 mt-2.5">
+                                * Data cuaca maritim diambil secara deterministik via External API untuk titik koordinat kargo saat ini (Slide 9 & 15).
+                            </p>
+                        </div>
+                    @endif
+
                     <!-- LEAFLET.JS MAP CONTAINER (Slide 9) -->
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="flex items-center justify-between mb-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                             <div>
                                 <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
                                     <span>🗺️</span> Peta Pelacakan Rute Maritim
                                 </h3>
                                 <p class="text-xs text-slate-500">Visualisasi titik pelabuhan asal, tujuan, dan posisi kapal terkini.</p>
                             </div>
-                            <span class="text-[11px] text-slate-400">Leaflet.js + OpenStreetMap</span>
+
+                            <!-- INTERACTIVE ZOOM & FOCUS CONTROLS -->
+                            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                                <button type="button" onclick="focusRoute()" title="Pusatkan Seluruh Rute" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg border border-slate-300 transition">
+                                    🔍 Seluruh Rute
+                                </button>
+                                <button type="button" onclick="focusShip()" title="Fokus ke Posisi Kapal" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg border border-blue-200 transition">
+                                    🚢 Kapal
+                                </button>
+                                <button type="button" onclick="focusOrigin()" title="Fokus Pelabuhan Asal" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg border border-slate-300 transition">
+                                    📍 Asal
+                                </button>
+                                <button type="button" onclick="focusDest()" title="Fokus Pelabuhan Tujuan" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg border border-slate-300 transition">
+                                    🏁 Tujuan
+                                </button>
+                                <button type="button" onclick="zoomInMap()" title="Zoom In (+)" class="w-7 h-7 flex items-center justify-center bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition">
+                                    +
+                                </button>
+                                <button type="button" onclick="zoomOutMap()" title="Zoom Out (-)" class="w-7 h-7 flex items-center justify-center bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition">
+                                    -
+                                </button>
+                                <button type="button" onclick="toggleMapHeight()" title="Ubah Ukuran Peta" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-lg border border-slate-300 transition">
+                                    ↕️ Layar
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- MAP DIV -->
-                        <div id="map" style="height: 420px; min-height: 420px; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1;"></div>
+                        <!-- MAP DIV WITH DYNAMIC ZOOM & RESIZE -->
+                        <div id="map" style="height: 440px; min-height: 440px; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1; transition: height 0.3s ease;"></div>
 
                         <!-- Legend below map -->
                         <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-600 px-1">
@@ -156,7 +219,10 @@
                                 <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-blue-600 rounded-full inline-block"></span> Posisi Terkini</span>
                                 <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-rose-500 rounded-full inline-block"></span> Tujuan: {{ $shipment->destination->city }}</span>
                             </div>
-                            <span class="text-slate-400 text-[10px]">Attribution: © OpenStreetMap contributors</span>
+                            <div class="flex items-center gap-3">
+                                <span id="zoom-indicator" class="font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[11px]">Zoom: 6.0x</span>
+                                <span class="text-slate-400 text-[10px]">© OpenStreetMap contributors</span>
+                            </div>
                         </div>
                     </div>
 
@@ -395,8 +461,17 @@
             const currLng = {{ $currLng }};
             const currLocName = "{{ $currLocName }}";
 
-            // Inisialisasi Map
-            const map = L.map('map').setView([currLat, currLng], 6);
+            // Inisialisasi Map dengan Smooth Fractional Zoom (Bisa disesuaikan halus sesuai keinginan)
+            const map = L.map('map', {
+                zoomSnap: 0.25,           // Memungkinkan zoom pecahan halus (misal 5.25x, 5.5x)
+                zoomDelta: 0.5,           // Perubahan zoom yang lembut
+                wheelPxPerZoomLevel: 90,  // Sensitivitas scroll mouse yang nyaman
+                scrollWheelZoom: true,    // Zoom bebas dengan scroll mouse
+                touchZoom: true,          // Zoom bebas cubit di touchscreen
+                doubleClickZoom: true,
+                minZoom: 2,
+                maxZoom: 18,
+            }).setView([currLat, currLng], 6.5);
 
             // Layer Peta OpenStreetMap (Slide 9: dengan attribution resmi)
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -415,9 +490,9 @@
             // Marker 3: Posisi Kapal Terkini (Current Location)
             const shipIcon = L.divIcon({
                 className: 'custom-ship-marker',
-                html: '<div style="background-color: #2563eb; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">🚢</div>',
-                iconSize: [34, 34],
-                iconAnchor: [17, 17]
+                html: '<div style="background-color: #2563eb; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 3px solid white; box-shadow: 0 4px 10px rgba(37,99,235,0.4); cursor: pointer;">🚢</div>',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
             });
 
             const currentMarker = L.marker([currLat, currLng], { icon: shipIcon }).addTo(map)
@@ -433,13 +508,64 @@
 
             const polyline = L.polyline(routePoints, {
                 color: '#2563eb',
-                weight: 3,
-                opacity: 0.8,
+                weight: 3.5,
+                opacity: 0.85,
                 dashArray: '8, 8'
             }).addTo(map);
 
-            // Auto fit kamera peta ke seluruh titik rute
+            // Auto fit kamera awal ke seluruh rute
             map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+
+            // Indikator Zoom Real-time
+            const zoomIndicator = document.getElementById('zoom-indicator');
+            function updateZoomIndicator() {
+                if (zoomIndicator) {
+                    zoomIndicator.innerText = 'Zoom: ' + map.getZoom().toFixed(2) + 'x';
+                }
+            }
+            map.on('zoomend', updateZoomIndicator);
+            updateZoomIndicator();
+
+            // KONTROL ZOOM & FOKUS TOMBOL:
+            window.focusRoute = function () {
+                map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+            };
+
+            window.focusShip = function () {
+                map.flyTo([currLat, currLng], 8.5, { duration: 1 });
+                currentMarker.openPopup();
+            };
+
+            window.focusOrigin = function () {
+                map.flyTo([originLat, originLng], 10, { duration: 1 });
+                originMarker.openPopup();
+            };
+
+            window.focusDest = function () {
+                map.flyTo([destLat, destLng], 10, { duration: 1 });
+                destMarker.openPopup();
+            };
+
+            window.zoomInMap = function () {
+                map.zoomIn();
+            };
+
+            window.zoomOutMap = function () {
+                map.zoomOut();
+            };
+
+            let isExpanded = false;
+            window.toggleMapHeight = function () {
+                const mapEl = document.getElementById('map');
+                if (!isExpanded) {
+                    mapEl.style.height = '620px';
+                    isExpanded = true;
+                } else {
+                    mapEl.style.height = '440px';
+                    isExpanded = false;
+                }
+                setTimeout(() => map.invalidateSize(), 300);
+            };
         });
     </script>
 </x-app-layout>

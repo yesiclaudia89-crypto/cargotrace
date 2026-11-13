@@ -121,7 +121,15 @@ class ShipmentController extends Controller
 
         $locations = Location::all();
 
-        return view('shipments.show', compact('shipment', 'locations'));
+        // Fetch External API live maritime weather for latest cargo coordinates (Slide 9 & 15)
+        $latestCoordEvent = $shipment->trackingEvents->filter(fn ($e) => ! empty($e->latitude) && ! empty($e->longitude))->last();
+        $targetLat = (float) ($latestCoordEvent?->latitude ?? $shipment->origin->latitude);
+        $targetLng = (float) ($latestCoordEvent?->longitude ?? $shipment->origin->longitude);
+
+        $weatherService = app(\App\Services\WeatherService::class);
+        $weather = $weatherService->getMaritimeWeather($targetLat, $targetLng);
+
+        return view('shipments.show', compact('shipment', 'locations', 'weather'));
     }
 
     public function storeTracking(Request $request, Shipment $shipment): RedirectResponse
