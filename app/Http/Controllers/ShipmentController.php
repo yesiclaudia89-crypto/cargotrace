@@ -132,6 +132,39 @@ class ShipmentController extends Controller
         return view('shipments.show', compact('shipment', 'locations', 'weather'));
     }
 
+    /**
+     * Public Tracking View - Slide 10 Requirement (No auth required)
+     */
+    public function publicTrack(Request $request, ?string $tracking_number = null): View
+    {
+        $query = $tracking_number ?? $request->query('search') ?? $request->query('tracking_number') ?? 'CT-2026-001';
+
+        $shipment = Shipment::where('shipment_number', $query)->first();
+
+        if (! $shipment) {
+            $shipment = Shipment::firstOrFail();
+        }
+
+        $shipment->load([
+            'carrier',
+            'origin',
+            'destination',
+            'customer',
+            'items',
+            'trackingEvents' => fn ($q) => $q->orderBy('event_time', 'asc'),
+            'exceptions' => fn ($q) => $q->latest('logged_at'),
+        ]);
+
+        $latestCoordEvent = $shipment->trackingEvents->filter(fn ($e) => ! empty($e->latitude) && ! empty($e->longitude))->last();
+        $targetLat = (float) ($latestCoordEvent?->latitude ?? $shipment->origin->latitude);
+        $targetLng = (float) ($latestCoordEvent?->longitude ?? $shipment->origin->longitude);
+
+        $weatherService = app(\App\Services\WeatherService::class);
+        $weather = $weatherService->getMaritimeWeather($targetLat, $targetLng);
+
+        return view('shipments.public-track', compact('shipment', 'weather'));
+    }
+
     public function storeTracking(Request $request, Shipment $shipment): RedirectResponse
     {
         $validated = $request->validate([

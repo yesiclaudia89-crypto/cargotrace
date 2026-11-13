@@ -12,6 +12,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public Tracking (Slide 10 - No login required)
+Route::get('/track/{tracking_number?}', [ShipmentController::class, 'publicTrack'])->name('shipments.public-track');
+
 // 2. Rute yang Membutuhkan Login (Auth)
 Route::middleware('auth')->group(function () {
 
