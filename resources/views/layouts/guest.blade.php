@@ -14,7 +14,7 @@
         <!-- Tailwind CSS CDN for 100% Reliable & Beautiful Styles -->
         <script src="https://cdn.tailwindcss.com"></script>
 
-        <!-- Custom Tailwind config if needed -->
+        <!-- Custom Tailwind config -->
         <script>
             tailwind.config = {
                 theme: {
@@ -22,11 +22,11 @@
                         colors: {
                             brand: {
                                 50: '#eff6ff',
+                                100: '#dbeafe',
                                 500: '#3b82f6',
                                 600: '#2563eb',
                                 700: '#1d4ed8',
                                 900: '#1e3a8a',
-                                950: '#0b132b',
                             }
                         }
                     }
@@ -37,7 +37,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-slate-100 antialiased min-h-screen bg-[#070D18] selection:bg-blue-500 selection:text-white">
+    <body class="font-sans text-slate-800 antialiased min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">
         {{ $slot }}
     </body>
 </html>
