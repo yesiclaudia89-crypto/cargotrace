@@ -1,0 +1,496 @@
+{
+  "info": {
+    "_postman_id": "cargotrace-uas-api-v2",
+    "name": "CargoTrace REST API - UAS Web Programming 2",
+    "description": "Collection resmi REST API CargoTrace (Global Shipment Visibility & Tracking Platform) untuk pengujian evaluasi UAS Pemrograman Web 2. Dilengkapi otentikasi Sanctum Bearer Token, manajemen kargo, pelacakan GPS Leaflet, deteksi cuaca Open-Meteo, kalkulasi delay, dan log insiden kendala operasional.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication (Sanctum)",
+      "item": [
+        {
+          "name": "Login - Administrator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.access_token);",
+                  "    console.log('Sanctum Token Admin tersimpan otomatis!');",
+                  "}",
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Token is present', function () {",
+                  "    pm.expect(jsonData.data.access_token).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@cargotrace.test\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            },
+            "description": "Login sebagai Administrator untuk mendapatkan Sanctum Bearer Token dengan hak akses penuh."
+          }
+        },
+        {
+          "name": "Login - Logistics Operator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.access_token);",
+                  "}",
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"operator@cargotrace.test\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            },
+            "description": "Login sebagai Operator Logistik untuk update tracking event dan pencatatan kendala."
+          }
+        },
+        {
+          "name": "Login - Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.access_token);",
+                  "}",
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@cargotrace.test\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            },
+            "description": "Login sebagai Customer untuk melihat data kargo miliknya sendiri (terproteksi hak akses)."
+          }
+        },
+        {
+          "name": "Get Authenticated User (Profile)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["user"]
+            },
+            "description": "Memeriksa profil user yang sedang login beserta role aktifnya."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["logout"]
+            },
+            "description": "Mencabut (revoke) token otentikasi Sanctum saat ini."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Shipments Module",
+      "item": [
+        {
+          "name": "List All Shipments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shipments",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"]
+            },
+            "description": "Mendapatkan daftar kargo dengan paginasi (Otomatis difilter sesuai role: Customer hanya melihat kargo miliknya)."
+          }
+        },
+        {
+          "name": "Filter Shipments by Status (IN_TRANSIT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shipments?status=IN_TRANSIT",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "IN_TRANSIT"
+                }
+              ]
+            },
+            "description": "Filter daftar kargo yang sedang dalam pelayaran."
+          }
+        },
+        {
+          "name": "Get Shipment Detail (With Delay & Weather)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shipments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "1"]
+            },
+            "description": "Mengambil detail lengkap kargo termasuk perhitungan deviasi delay deterministik dan cuaca maritim live dari Open-Meteo."
+          }
+        },
+        {
+          "name": "Create Shipment (Admin/Operator Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 3,\n  \"carrier_id\": 1,\n  \"origin_id\": 1,\n  \"destination_id\": 2,\n  \"cargo_type\": \"Container 40ft (Elektronik & Sparepart)\",\n  \"total_weight\": 18500,\n  \"freight_cost\": 25000000,\n  \"expected_departure\": \"2026-11-20 08:00:00\",\n  \"expected_arrival\": \"2026-11-23 18:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"]
+            },
+            "description": "Membuat booking pengiriman kargo baru. Nomor resi unik CT-YYYYMM-XXX akan di-generate otomatis."
+          }
+        },
+        {
+          "name": "Update Shipment Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cargo_type\": \"Container 40ft (High Value Electronics)\",\n  \"total_weight\": 19200\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "1"]
+            },
+            "description": "Memperbarui rincian muatan kargo (Khusus Admin dan Operator)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Tracking Timeline & GPS Coordinates",
+      "item": [
+        {
+          "name": "Get Tracking Timeline Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shipments/1/tracking",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "1", "tracking"]
+            },
+            "description": "Mendapatkan seluruh riwayat peristiwa pelacakan kargo secara kronologis."
+          }
+        },
+        {
+          "name": "Add Tracking Event (Admin/Operator Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"event_type\": \"POSITION_UPDATE\",\n  \"location_name\": \"Mendekati Selat Singapura\",\n  \"latitude\": 1.25,\n  \"longitude\": 103.85,\n  \"description\": \"Kapal telah melewati Selat Karimata dan memasuki perairan pandu Selat Singapura. Kecepatan 16 knots.\",\n  \"event_time\": \"2026-11-14 11:30:00\",\n  \"new_eta\": \"2026-11-16 23:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments/1/tracking",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "1", "tracking"]
+            },
+            "description": "Operator menginput titik koordinat GPS baru kapal serta memperbarui estimasi tiba."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Exceptions & Incident Management",
+      "item": [
+        {
+          "name": "Get Shipment Exceptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shipments/1/exceptions",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "1", "exceptions"]
+            },
+            "description": "Mendapatkan riwayat kendala operasional yang pernah dicatat pada kargo ini."
+          }
+        },
+        {
+          "name": "Log New Exception (Admin/Operator Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"exception_type\": \"WEATHER_DELAY\",\n  \"description\": \"Gelombang tinggi 3.5 meter dan angin kencang di Selat Karimata. Kapal menurunkan kecepatan sesuai SOP keselamatan pelayaran.\",\n  \"delay_impact_hours\": 4,\n  \"location_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments/1/exceptions",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "1", "exceptions"]
+            },
+            "description": "Mencatat kendala operasional. Secara otomatis menambahkan estimasi keterlambatan ke ETA kargo."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Master Data",
+      "item": [
+        {
+          "name": "Get Carriers List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carriers",
+              "host": ["{{baseUrl}}"],
+              "path": ["carriers"]
+            },
+            "description": "Mendapatkan daftar maskapai pelayaran (Samudera, Meratus, Maersk, Garuda Cargo)."
+          }
+        },
+        {
+          "name": "Get Locations List (Ports & Hubs)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["locations"]
+            },
+            "description": "Mendapatkan daftar pelabuhan internasional dan koordinat GPS bujur/lintangnya."
+          }
+        }
+      ]
+    }
+  ]
+}

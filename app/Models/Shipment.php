@@ -46,6 +46,44 @@ class Shipment extends Model
         'delay_hours' => 'integer',
     ];
 
+    protected $appends = [
+        'delay_status',
+    ];
+
+    /**
+     * Deterministic Delay Calculation Engine (Slide 9)
+     */
+    public function getDelayHoursAttribute($value): int
+    {
+        if ($value !== null && (int) $value > 0) {
+            return (int) $value;
+        }
+
+        if ($this->estimated_arrival && $this->expected_arrival) {
+            $diff = $this->expected_arrival->diffInHours($this->estimated_arrival, false);
+            return $diff > 0 ? (int) $diff : 0;
+        }
+
+        return 0;
+    }
+
+    public function getDelayStatusAttribute(): string
+    {
+        $hours = $this->delay_hours;
+
+        if ($hours <= 0) {
+            return 'ON_TIME';
+        }
+        if ($hours <= 4) {
+            return 'MINOR_DELAY';
+        }
+        if ($hours <= 12) {
+            return 'MEDIUM_DELAY';
+        }
+
+        return 'CRITICAL_DELAY';
+    }
+
     /**
      * State machine valid transitions (Slide 6)
      */
