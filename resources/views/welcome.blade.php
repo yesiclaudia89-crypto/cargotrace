@@ -12,6 +12,10 @@
     <!-- Tailwind CSS CDN for 100% Reliable & Beautiful Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Leaflet CSS & JS for Live Interactive Map in Hero -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <!-- Scripts & Styles via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -23,32 +27,35 @@
     <div class="fixed top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-200/30 rounded-full blur-[140px] pointer-events-none z-0"></div>
 
     <!-- ==================== TOP NAVIGATION ==================== -->
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
             <!-- Logo Brand -->
             <a href="/" class="flex items-center gap-3.5 group">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-2xl text-white shadow-lg shadow-blue-500/25 group-hover:scale-105 transition duration-300">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 flex items-center justify-center text-2xl text-white shadow-lg shadow-blue-500/25 group-hover:scale-105 transition duration-300">
                     🚢
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="font-extrabold text-2xl tracking-tight text-slate-900">Cargo<span class="text-blue-600">Trace</span></span>
-                        <span class="hidden sm:inline-block px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200 rounded-full">
+                        <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200 rounded-full">
                             v2.4 Live
                         </span>
                     </div>
-                    <span class="hidden sm:block text-[11px] text-slate-500">Global Shipment Visibility & Tracking Platform</span>
+                    <span class="hidden sm:block text-[11px] text-slate-500">Global Maritime Visibility & Delay Detection Engine</span>
                 </div>
             </a>
 
             <!-- Center Menu Links -->
             <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
-                <a href="#tracking" class="hover:text-blue-600 transition">Pelacakan Kargo</a>
-                <a href="#fitur" class="hover:text-blue-600 transition">Fitur Arsitektur</a>
-                <a href="#demo-accounts" class="hover:text-blue-600 transition flex items-center gap-1.5 text-blue-600 font-bold">
-                    <span>⚡</span> Akun Demo Dosen
+                <a href="#tracking" class="hover:text-blue-600 transition flex items-center gap-1.5">
+                    <span>🗺️</span> Pelacakan Live
                 </a>
+                <a href="#demo-accounts" class="hover:text-blue-600 transition flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
+                    <span>⚡</span> 1-Klik Akun Dosen
+                </a>
+                <a href="#fitur" class="hover:text-blue-600 transition">Fitur Arsitektur</a>
+                <a href="#state-machine" class="hover:text-blue-600 transition">Siklus Kargo</a>
             </nav>
 
             <!-- Auth Buttons -->
@@ -75,149 +82,198 @@
         </div>
     </header>
 
-    <!-- ==================== MAIN CONTENT ==================== -->
+    <!-- ==================== MAIN HERO SECTION ==================== -->
     <main class="flex-1 relative z-10">
 
-        <!-- HERO SECTION -->
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 text-center">
+        <!-- HERO CONTAINER (SPLIT 2 COLS ON DESKTOP) -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
             
-            <!-- Live Operational Pill -->
-            <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-blue-700 border border-blue-200 shadow-sm mb-8">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>REAL-TIME MARITIME LOGISTICS VISIBILITY & DELAY ENGINE</span>
-            </div>
-
-            <!-- Big Main Headline -->
-            <h1 class="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight max-w-5xl mx-auto">
-                Visibilitas Rute Kargo Maritim & <br class="hidden sm:inline">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600">
-                    Pelacakan Logistik Global
-                </span>
-            </h1>
-
-            <p class="mt-6 text-base sm:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Platform komprehensif pemantauan kontainer lintas samudra: pelacakan koordinat GPS rute kapal via Leaflet.js, integrasi cuaca maritim Open-Meteo, kalkulasi deviasi jadwal deterministik, serta simulasi invoice Midtrans.
-            </p>
-
-            <!-- ==============================================
-                 INTERACTIVE LIVE TRACKING CONSOLE (HERO BOX)
-                 ============================================== -->
-            <div id="tracking" class="mt-12 max-w-3xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/70 text-left relative overflow-hidden">
-                <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500"></div>
-
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-100">
-                    <div>
-                        <h3 class="font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                            <span>🔍</span> Konsol Pelacakan Kargo Real-Time
-                        </h3>
-                        <p class="text-xs text-slate-500">Cari nomor resi kargo untuk melihat peta dan estimasi keterlambatan</p>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                
+                <!-- LEFT COLUMN: VALUE PROPOSITION & QUICK TRACK CONSOLE (7 Cols) -->
+                <div class="lg:col-span-6 xl:col-span-7 space-y-6 text-left">
+                    
+                    <!-- Live Telemetry Pill -->
+                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-blue-700 border border-blue-200 shadow-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>LIVE AIS MARITIME TRACKING & DELAY ENGINE</span>
                     </div>
-                    <span class="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">
-                        ● AIS Gateway Connected
-                    </span>
-                </div>
 
-                <!-- Input Search Form -->
-                <form action="{{ route('shipments.public-track') }}" method="GET" class="mt-5 flex flex-col sm:flex-row gap-2.5">
-                    <div class="relative flex-1">
-                        <input 
-                            id="tracking-input"
-                            type="text" 
-                            name="tracking_number" 
-                            placeholder="Nomor Resi Kargo (misal: CT-2026-001)" 
-                            value="CT-2026-001"
-                            class="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-mono text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition"
-                            required
-                        >
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </div>
-                    </div>
-                    <button type="submit" class="px-7 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-500/25 transition flex items-center justify-center gap-2">
-                        <span>Lacak Sekarang</span>
-                        <span>➔</span>
-                    </button>
-                </form>
-
-                <!-- Quick Samples Pills -->
-                <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
-                    <span class="text-slate-500 font-semibold">Uji Cepat Kargo:</span>
-                    <button type="button" onclick="previewShipment('CT-2026-001', 'MV Samudera Perkasa', 'Tanjung Priok, Jakarta', 'Port of Singapore', 'IN_TRANSIT', '+8 Jam (Weather Hold)', '🌧️ 28°C Hujan Ringan (14 kt)', '65%')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-mono text-[11px] border border-blue-200 transition font-semibold">
-                        CT-2026-001 (In Transit • Delay)
-                    </button>
-                    <button type="button" onclick="previewShipment('CT-2026-002', 'MV Meratus Java', 'Tanjung Perak, Surabaya', 'Port of Rotterdam', 'DELIVERED', '0 Jam (Tepat Waktu)', '☀️ 16°C Cerah Berawan', '100%')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-mono text-[11px] border border-emerald-200 transition font-semibold">
-                        CT-2026-002 (Delivered • On-Time)
-                    </button>
-                    <button type="button" onclick="previewShipment('CT-2026-003', 'MV Meratus Spirit', 'Belawan, Medan', 'Hamburg Port', 'CREATED', 'Menunggu Pembayaran', '⛅ 29°C Berawan', '0%')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 font-mono text-[11px] border border-amber-200 transition font-semibold">
-                        CT-2026-003 (Created • Unpaid)
-                    </button>
-                </div>
-
-                <!-- Dynamic Preview Card -->
-                <div id="preview-box" class="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <div class="flex items-center justify-between text-xs pb-2 border-b border-slate-200">
-                        <div class="flex items-center gap-2">
-                            <span class="font-mono text-blue-600 font-bold" id="prev-number">CT-2026-001</span>
-                            <span class="text-slate-400">•</span>
-                            <span class="text-slate-900 font-bold" id="prev-vessel">MV Samudera Perkasa</span>
-                        </div>
-                        <span id="prev-status" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300">
-                            IN_TRANSIT
+                    <!-- Main Catchy Headline -->
+                    <h1 class="text-3xl sm:text-5xl xl:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                        Pantau Kargo Lintas Samudra <br class="hidden sm:inline">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600">
+                            Secara Real-Time Tanpa Titik Buta.
                         </span>
-                    </div>
+                    </h1>
 
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                        <div class="flex items-center gap-2 text-slate-700 font-medium">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                            <span id="prev-origin">Tanjung Priok, Jakarta</span>
-                            <span class="text-slate-400">➔</span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                            <span id="prev-destination">Port of Singapore</span>
+                    <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
+                        Sistem cerdas pemantauan kontainer maritim: pelacakan GPS Leaflet.js real-time, integrasi cuaca laut Open-Meteo, kalkulasi deviasi jadwal otomatis, serta simulasi invoice Midtrans.
+                    </p>
+
+                    <!-- QUICK TRACK SEARCH BOX -->
+                    <div id="tracking" class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xl shadow-slate-200/70 space-y-3">
+                        <form action="{{ route('shipments.public-track') }}" method="GET" class="flex flex-col sm:flex-row gap-2.5">
+                            <div class="relative flex-1">
+                                <input 
+                                    id="tracking-input"
+                                    type="text" 
+                                    name="tracking_number" 
+                                    placeholder="Nomor Resi (misal: CT-2026-001)" 
+                                    value="CT-2026-001"
+                                    class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-mono text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition"
+                                    required
+                                >
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                </div>
+                            </div>
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm rounded-xl shadow-md shadow-blue-500/25 transition flex items-center justify-center gap-2">
+                                <span>Lacak Peta</span>
+                                <span>➔</span>
+                            </button>
+                        </form>
+
+                        <!-- Quick Shipment Switcher Chips -->
+                        <div class="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
+                            <span class="text-slate-500 font-bold mr-1">Uji Cepat:</span>
+                            <button type="button" onclick="selectShipmentPreview(0)" id="chip-0" class="chip-btn px-2.5 py-1 rounded-lg bg-blue-600 text-white font-mono text-[11px] font-bold shadow-sm transition">
+                                🚢 CT-2026-001 (In Transit • Delay)
+                            </button>
+                            <button type="button" onclick="selectShipmentPreview(1)" id="chip-1" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] font-semibold border border-slate-200 transition">
+                                🚢 CT-2026-002 (Delivered)
+                            </button>
+                            <button type="button" onclick="selectShipmentPreview(2)" id="chip-2" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] font-semibold border border-slate-200 transition">
+                                🚢 CT-2026-003 (Created)
+                            </button>
                         </div>
-                        <div class="text-[11px] text-amber-800 font-bold" id="prev-delay">
-                            Deviasi: +8 Jam (Weather Hold)
+                    </div>
+
+                    <!-- 4 Trust Bullets -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs text-slate-700 pt-1">
+                        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm font-medium">
+                            <span class="text-blue-600 font-bold">✓</span> Leaflet Vector Map
+                        </div>
+                        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm font-medium">
+                            <span class="text-blue-600 font-bold">✓</span> Open-Meteo Weather
+                        </div>
+                        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm font-medium">
+                            <span class="text-blue-600 font-bold">✓</span> Midtrans Gateway
+                        </div>
+                        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm font-medium">
+                            <span class="text-blue-600 font-bold">✓</span> REST API Sanctum
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                        <div id="prev-progress" class="bg-gradient-to-r from-blue-600 to-sky-500 h-2 rounded-full transition-all duration-500" style="width: 65%"></div>
+                </div>
+
+                <!-- RIGHT COLUMN: INTERACTIVE LIVE MAP & RADAR HERO CARD (5 Cols) -->
+                <div class="lg:col-span-6 xl:col-span-5">
+                    
+                    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-2xl shadow-slate-200/80 relative overflow-hidden space-y-4">
+                        <!-- Top Gradient Accent -->
+                        <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500"></div>
+
+                        <!-- Card Header: Vessel Info & Status -->
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-xl text-blue-600">
+                                    ⚓
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-extrabold text-slate-900 text-sm" id="hero-vessel-name">MV Samudera Perkasa</span>
+                                        <span class="font-mono text-blue-600 font-bold text-xs" id="hero-shipment-number">(CT-2026-001)</span>
+                                    </div>
+                                    <span class="text-slate-500 text-[11px]" id="hero-carrier-name">Carrier: Samudera Shipping Line • IMO 9821402</span>
+                                </div>
+                            </div>
+                            <span id="hero-status-badge" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1.5 shadow-sm">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                <span id="hero-status-text">IN_TRANSIT</span>
+                            </span>
+                        </div>
+
+                        <!-- INTERACTIVE LEAFLET MINI-MAP CONTAINER -->
+                        <div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                            <div id="hero-map" style="height: 280px; width: 100%;"></div>
+                            
+                            <!-- Floating Map Controls Badge -->
+                            <div class="absolute top-2 right-2 z-[400] bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-700 shadow-sm flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>Live Leaflet.js Vector</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Track & Route Ports -->
+                        <div class="space-y-2 pt-1 text-xs">
+                            <div class="flex items-center justify-between font-semibold">
+                                <div class="flex items-center gap-1.5 text-slate-800">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <span id="hero-origin-port">Tanjung Priok (IDJKT)</span>
+                                </div>
+                                <span class="text-slate-400 font-bold">➔</span>
+                                <div class="flex items-center gap-1.5 text-slate-800">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                    <span id="hero-dest-port">Port of Singapore (SGSIN)</span>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
+                                <div id="hero-progress-bar" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 h-2 rounded-full transition-all duration-500" style="width: 65%"></div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
+                                <span id="hero-weather-text">Cuaca Laut: 🌧️ 28°C Hujan Ringan (14 kt)</span>
+                                <span id="hero-delay-text" class="font-extrabold text-amber-700">Deviasi: +8 Jam</span>
+                            </div>
+                        </div>
+
+                        <!-- Direct Open Button -->
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-xs text-slate-500">Detail rute pelayaran lengkap</span>
+                            <a id="hero-detail-link" href="{{ route('shipments.public-track', 'CT-2026-001') }}" class="font-extrabold text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                <span>Buka Pelacakan Penuh</span>
+                                <span>➔</span>
+                            </a>
+                        </div>
+
                     </div>
 
-                    <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                        <span id="prev-weather" class="font-medium">Cuaca Koordinat Kapal: 🌧️ 28°C Hujan Ringan (14 kt)</span>
-                        <a id="prev-link" href="{{ route('shipments.public-track', 'CT-2026-001') }}" class="font-bold text-blue-600 hover:text-blue-800 hover:underline">
-                            Buka Peta & Tracking Lengkap ➔
-                        </a>
-                    </div>
                 </div>
 
             </div>
 
-            <!-- FLEET TELEMETRY METRICS TICKER -->
-            <div class="mt-14 max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
-                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-                    <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Armada Kapal</span>
+        </section>
+
+
+        <!-- ==============================================
+             METRICS COUNTER TICKER BAR (4 STATS)
+             ============================================== -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Maskapai Pelayaran</span>
                     <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1 block font-mono">4 Global</span>
-                    <span class="text-[11px] text-slate-500 mt-1 block">Maersk, Samudera, Meratus, Garuda</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">Samudera, Meratus, Maersk, Garuda</span>
                 </div>
-                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition">
                     <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Pelabuhan Hub</span>
                     <span class="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1 block font-mono">5 Ports</span>
-                    <span class="text-[11px] text-slate-500 mt-1 block">JKT, SBY, MDN, SIN, RTM, HAM</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">Jakarta, Surabaya, Medan, Singapore, Rotterdam</span>
                 </div>
-                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-                    <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Sensor Cuaca</span>
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Sensor Cuaca Maritim</span>
                     <span class="text-2xl sm:text-3xl font-extrabold text-sky-600 mt-1 block font-mono">Open-Meteo</span>
-                    <span class="text-[11px] text-slate-500 mt-1 block">Suhu, Ombak, Angin Maritim</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">Suhu Laut, Ombak, Kecepatan Angin</span>
                 </div>
-                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-                    <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Midtrans Ready</span>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1 block font-mono">Auto-Settle</span>
-                    <span class="text-[11px] text-slate-500 mt-1 block">CREATED ➔ BOOKED Instant</span>
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition">
+                    <span class="text-slate-500 text-xs block uppercase tracking-wider font-bold">Payment Gateway</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1 block font-mono">Midtrans</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">CREATED ➔ BOOKED Auto-Settle</span>
                 </div>
             </div>
-
         </section>
 
 
@@ -247,7 +303,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
                     
                     <!-- Admin Card -->
-                    <div class="bg-purple-50/40 border border-purple-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-purple-300 transition group">
+                    <div class="bg-purple-50/40 border border-purple-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-purple-300 transition group shadow-sm">
                         <div class="space-y-2">
                             <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl">
                                 👑
@@ -273,7 +329,7 @@
                     </div>
 
                     <!-- Operator Card -->
-                    <div class="bg-blue-50/40 border border-blue-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-blue-300 transition group">
+                    <div class="bg-blue-50/40 border border-blue-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-blue-300 transition group shadow-sm">
                         <div class="space-y-2">
                             <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl">
                                 🛠️
@@ -299,7 +355,7 @@
                     </div>
 
                     <!-- Customer Card -->
-                    <div class="bg-emerald-50/40 border border-emerald-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-emerald-300 transition group">
+                    <div class="bg-emerald-50/40 border border-emerald-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-emerald-300 transition group shadow-sm">
                         <div class="space-y-2">
                             <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl">
                                 👤
@@ -414,6 +470,53 @@
             </div>
         </section>
 
+
+        <!-- ==============================================
+             STATE MACHINE VISUAL LIFECYCLE (SLIDE 6)
+             ============================================== -->
+        <section id="state-machine" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-lg text-center space-y-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Alur Deterministic State Machine</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                        Siklus Hidup Status Pengiriman Kontainer (Slide 6)
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
+                        Status berpindah secara ketat sesuai alur bisnis logistik resmi. Loncatan status tidak sah langsung ditolak sistem.
+                    </p>
+                </div>
+
+                <!-- Visual Step Pipeline -->
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-4 text-xs font-bold">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-700">
+                        <span class="block text-xl mb-1">📝</span>
+                        <span class="text-blue-600 block">1. CREATED</span>
+                        <span class="text-[10px] text-slate-500 font-normal">Booking Dibuat (Unpaid)</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900">
+                        <span class="block text-xl mb-1">💳</span>
+                        <span class="text-blue-700 block">2. BOOKED</span>
+                        <span class="text-[10px] text-blue-600 font-normal">Tagihan Lunas (Paid)</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900">
+                        <span class="block text-xl mb-1">📦</span>
+                        <span class="text-indigo-700 block">3. PICKED_UP</span>
+                        <span class="text-[10px] text-indigo-600 font-normal">Kontainer Dimuat di Truk</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+                        <span class="block text-xl mb-1">🚢</span>
+                        <span class="text-amber-700 block">4. IN_TRANSIT</span>
+                        <span class="text-[10px] text-amber-600 font-normal">Kapal Berlayar di Laut</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900">
+                        <span class="block text-xl mb-1">✅</span>
+                        <span class="text-emerald-700 block">5. DELIVERED</span>
+                        <span class="text-[10px] text-emerald-600 font-normal">Tiba di Pelabuhan Tujuan</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- ==================== FOOTER ==================== -->
@@ -430,29 +533,142 @@
         </div>
     </footer>
 
-    <!-- Interactive JS for Landing Page Preview -->
+    <!-- INTERACTIVE JAVASCRIPT FOR HERO LEAFLET MAP & LIVE SWITCHER -->
     <script>
-        function previewShipment(number, vessel, origin, destination, status, delay, weather, progress) {
-            document.getElementById('tracking-input').value = number;
-            document.getElementById('prev-number').textContent = number;
-            document.getElementById('prev-vessel').textContent = vessel;
-            document.getElementById('prev-origin').textContent = origin;
-            document.getElementById('prev-destination').textContent = destination;
-            document.getElementById('prev-status').textContent = status;
-            document.getElementById('prev-delay').textContent = 'Deviasi: ' + delay;
-            document.getElementById('prev-weather').textContent = 'Cuaca Koordinat Kapal: ' + weather;
-            document.getElementById('prev-progress').style.width = progress;
-            document.getElementById('prev-link').href = '/track/' + number;
-
-            // Change status badge style
-            const statusBadge = document.getElementById('prev-status');
-            if (status === 'IN_TRANSIT') {
-                statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300';
-            } else if (status === 'DELIVERED') {
-                statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300';
-            } else {
-                statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-300';
+        // Sample Shipments Dataset
+        const sampleShipments = [
+            {
+                number: 'CT-2026-001',
+                vessel: 'MV Samudera Perkasa',
+                carrier: 'Carrier: Samudera Shipping Line • IMO 9821402',
+                status: 'IN_TRANSIT',
+                statusClass: 'bg-amber-100 text-amber-800 border-amber-300',
+                origin: 'Tanjung Priok (IDJKT)',
+                dest: 'Port of Singapore (SGSIN)',
+                originCoords: [-6.10, 106.88],
+                destCoords: [1.29, 103.85],
+                vesselCoords: [-3.20, 107.50],
+                weather: 'Cuaca Laut: 🌧️ 28°C Hujan Ringan (14 kt)',
+                delay: 'Deviasi: +8 Jam (Weather Hold)',
+                delayClass: 'text-amber-700',
+                progress: '65%'
+            },
+            {
+                number: 'CT-2026-002',
+                vessel: 'MV Meratus Java',
+                carrier: 'Carrier: Meratus Line • IMO 9718420',
+                status: 'DELIVERED',
+                statusClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                origin: 'Tanjung Perak (IDSBY)',
+                dest: 'Port of Rotterdam (NLRTM)',
+                originCoords: [-7.20, 112.73],
+                destCoords: [51.95, 4.13],
+                vesselCoords: [51.95, 4.13],
+                weather: 'Cuaca Laut: ☀️ 16°C Cerah Berawan (9 kt)',
+                delay: 'Deviasi: 0 Jam (Tepat Waktu)',
+                delayClass: 'text-emerald-700',
+                progress: '100%'
+            },
+            {
+                number: 'CT-2026-003',
+                vessel: 'MV Meratus Spirit',
+                carrier: 'Carrier: Meratus Line • IMO 9654109',
+                status: 'CREATED',
+                statusClass: 'bg-blue-100 text-blue-800 border-blue-300',
+                origin: 'Belawan (IDBLW)',
+                dest: 'Hamburg Port (DEHAM)',
+                originCoords: [3.78, 98.68],
+                destCoords: [53.53, 9.98],
+                vesselCoords: [3.78, 98.68],
+                weather: 'Cuaca Pelabuhan: ⛅ 29°C Berawan (6 kt)',
+                delay: 'Menunggu Pembayaran Freight',
+                delayClass: 'text-blue-700',
+                progress: '5%'
             }
+        ];
+
+        // Initialize Hero Map
+        let heroMap, routePolyline, vesselMarker, originMarker, destMarker;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Leaflet initialization
+            heroMap = L.map('hero-map', {
+                zoomSnap: 0.25,
+                zoomDelta: 0.5,
+                zoomControl: true,
+                attributionControl: false
+            }).setView([-3.20, 107.50], 5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18
+            }).addTo(heroMap);
+
+            // Select initial shipment CT-2026-001
+            renderShipmentOnMap(0);
+        });
+
+        function renderShipmentOnMap(index) {
+            const data = sampleShipments[index];
+
+            // Update Text Elements
+            document.getElementById('tracking-input').value = data.number;
+            document.getElementById('hero-shipment-number').textContent = '(' + data.number + ')';
+            document.getElementById('hero-vessel-name').textContent = data.vessel;
+            document.getElementById('hero-carrier-name').textContent = data.carrier;
+            document.getElementById('hero-status-text').textContent = data.status;
+            document.getElementById('hero-status-badge').className = 'px-2.5 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm ' + data.statusClass;
+            document.getElementById('hero-origin-port').textContent = data.origin;
+            document.getElementById('hero-dest-port').textContent = data.dest;
+            document.getElementById('hero-weather-text').textContent = data.weather;
+            document.getElementById('hero-delay-text').textContent = data.delay;
+            document.getElementById('hero-delay-text').className = 'font-extrabold ' + data.delayClass;
+            document.getElementById('hero-progress-bar').style.width = data.progress;
+            document.getElementById('hero-detail-link').href = '/track/' + data.number;
+
+            // Update Active Chip Styling
+            for (let i = 0; i < 3; i++) {
+                const chip = document.getElementById('chip-' + i);
+                if (i === index) {
+                    chip.className = 'chip-btn px-2.5 py-1 rounded-lg bg-blue-600 text-white font-mono text-[11px] font-bold shadow-sm transition';
+                } else {
+                    chip.className = 'chip-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] font-semibold border border-slate-200 transition';
+                }
+            }
+
+            // Remove previous map layers if present
+            if (originMarker) heroMap.removeLayer(originMarker);
+            if (destMarker) heroMap.removeLayer(destMarker);
+            if (vesselMarker) heroMap.removeLayer(vesselMarker);
+            if (routePolyline) heroMap.removeLayer(routePolyline);
+
+            // Origin Marker
+            originMarker = L.marker(data.originCoords).addTo(heroMap).bindPopup('<b>Pelabuhan Asal:</b><br>' + data.origin);
+
+            // Destination Marker
+            destMarker = L.marker(data.destCoords).addTo(heroMap).bindPopup('<b>Pelabuhan Tujuan:</b><br>' + data.dest);
+
+            // Custom Vessel Icon
+            const vesselIcon = L.divIcon({
+                html: '<div style="font-size:26px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35)); transform: translate(-13px, -13px);">🚢</div>',
+                className: 'hero-vessel-marker',
+                iconSize: [26, 26]
+            });
+            vesselMarker = L.marker(data.vesselCoords, { icon: vesselIcon }).addTo(heroMap).bindPopup('<b>Kapal:</b> ' + data.vessel + '<br><b>Status:</b> ' + data.status);
+
+            // Route Polyline
+            const routePoints = [data.originCoords, data.vesselCoords, data.destCoords];
+            routePolyline = L.polyline(routePoints, {
+                color: '#2563eb',
+                weight: 3.5,
+                dashArray: '5, 5'
+            }).addTo(heroMap);
+
+            // Fit bounds smoothly
+            heroMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+        }
+
+        function selectShipmentPreview(index) {
+            renderShipmentOnMap(index);
         }
     </script>
 
