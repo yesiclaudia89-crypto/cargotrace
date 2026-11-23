@@ -12,6 +12,10 @@
     <!-- Tailwind CSS CDN for 100% Reliable & Beautiful Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Three.js & Globe.gl for Interactive 3D Earth Globe -->
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
+
     <!-- Leaflet CSS & JS for Live Interactive Map in Hero -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -194,14 +198,36 @@
                             </span>
                         </div>
 
-                        <!-- INTERACTIVE LEAFLET MINI-MAP CONTAINER -->
-                        <div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
-                            <div id="hero-map" style="height: 280px; width: 100%;"></div>
-                            
-                            <!-- Floating Map Controls Badge -->
+                        <!-- VIEW SWITCHER: 3D GLOBE vs LEAFLET MAP -->
+                        <div class="flex items-center justify-between pb-1">
+                            <span class="text-[11px] font-bold text-slate-500">Pilihan Tampilan Radar:</span>
+                            <div class="inline-flex rounded-xl bg-slate-100 p-0.5 border border-slate-200 text-xs">
+                                <button type="button" onclick="switchHeroMode('globe')" id="btnHeroGlobe" class="px-2.5 py-1 rounded-lg font-extrabold text-[11px] transition bg-blue-600 text-white shadow-sm flex items-center gap-1">
+                                    <span>🌍</span>
+                                    <span>3D Globe</span>
+                                </button>
+                                <button type="button" onclick="switchHeroMode('map')" id="btnHeroMap" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition text-slate-600 hover:text-slate-900 flex items-center gap-1">
+                                    <span>🗺️</span>
+                                    <span>Peta 2D</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3D GLOBE CONTAINER -->
+                        <div id="hero-globe-wrap" class="relative rounded-2xl overflow-hidden border border-slate-800 shadow-inner bg-slate-950">
+                            <div id="hero-globe" style="height: 290px; width: 100%;"></div>
+                            <div class="absolute top-2 right-2 z-10 bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded-lg border border-slate-700 text-[10px] font-bold text-cyan-400 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+                                <span>Three.js 3D Earth</span>
+                            </div>
+                        </div>
+
+                        <!-- LEAFLET MINI-MAP CONTAINER (Hidden by default) -->
+                        <div id="hero-map-wrap" class="hidden relative rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                            <div id="hero-map" style="height: 290px; width: 100%;"></div>
                             <div class="absolute top-2 right-2 z-[400] bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-700 shadow-sm flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                <span>Live Leaflet.js Vector</span>
+                                <span>Esri Satellite 3D</span>
                             </div>
                         </div>
 
@@ -587,11 +613,16 @@
             }
         ];
 
-        // Initialize Hero Map
+        // Initialize Hero Map & 3D Globe
         let heroMap, routePolyline, vesselMarker, originMarker, destMarker;
+        let heroGlobe = null;
+        let currentHeroMode = 'globe';
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Leaflet initialization
+            // 1. Initialize Hero 3D Globe
+            initHeroGlobe();
+
+            // 2. Leaflet initialization
             heroMap = L.map('hero-map', {
                 zoomSnap: 0.25,
                 zoomDelta: 0.5,
@@ -608,6 +639,79 @@
             // Select initial shipment CT-2026-001
             renderShipmentOnMap(0);
         });
+
+        function initHeroGlobe() {
+            const container = document.getElementById('hero-globe');
+            if (!container || typeof Globe === 'undefined') return;
+
+            const width = container.clientWidth || 420;
+            const height = 290;
+
+            heroGlobe = Globe()
+                (container)
+                .width(width)
+                .height(height)
+                .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+                .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+                .atmosphereColor('#38bdf8')
+                .atmosphereAltitude(0.24)
+                .arcsData([
+                    { startLat: -6.10, startLng: 106.88, endLat: 1.29, endLng: 103.85, color: ['#38bdf8', '#fbbf24'] },
+                    { startLat: -7.20, startLng: 112.73, endLat: 51.95, endLng: 4.13, color: ['#34d399', '#10b981'] }
+                ])
+                .arcColor('color')
+                .arcDashLength(0.4)
+                .arcDashGap(0.2)
+                .arcDashAnimateTime(1600)
+                .arcStroke(1.8)
+                .pointsData([
+                    { lat: -3.20, lng: 107.50, size: 0.9, color: '#f59e0b' },
+                    { lat: -6.10, lng: 106.88, size: 0.5, color: '#0284c7' },
+                    { lat: 1.29, lng: 103.85, size: 0.5, color: '#10b981' },
+                    { lat: 51.95, lng: 4.13, size: 0.5, color: '#10b981' }
+                ])
+                .pointColor('color')
+                .pointRadius('size')
+                .ringsData([
+                    { lat: -3.20, lng: 107.50, maxR: 5, propagationSpeed: 2, repeatPeriod: 1200 }
+                ])
+                .ringColor(() => '#f59e0b');
+
+            heroGlobe.pointOfView({ lat: -2.5, lng: 108.0, altitude: 2.1 }, 1000);
+            heroGlobe.controls().autoRotate = true;
+            heroGlobe.controls().autoRotateSpeed = 0.9;
+
+            window.addEventListener('resize', () => {
+                if (heroGlobe && container) {
+                    heroGlobe.width(container.clientWidth);
+                }
+            });
+        }
+
+        window.switchHeroMode = function(mode) {
+            currentHeroMode = mode;
+            const gWrap = document.getElementById('hero-globe-wrap');
+            const mMap = document.getElementById('hero-map-wrap');
+            const bG = document.getElementById('btnHeroGlobe');
+            const bM = document.getElementById('btnHeroMap');
+
+            if (mode === 'globe') {
+                gWrap.classList.remove('hidden');
+                mMap.classList.add('hidden');
+                bG.className = 'px-2.5 py-1 rounded-lg font-extrabold text-[11px] transition bg-blue-600 text-white shadow-sm flex items-center gap-1';
+                bM.className = 'px-2.5 py-1 rounded-lg font-bold text-[11px] transition text-slate-600 hover:text-slate-900 flex items-center gap-1';
+                if (heroGlobe) {
+                    heroGlobe.width(document.getElementById('hero-globe').clientWidth);
+                }
+            } else {
+                gWrap.classList.add('hidden');
+                mMap.classList.remove('hidden');
+                bM.className = 'px-2.5 py-1 rounded-lg font-extrabold text-[11px] transition bg-blue-600 text-white shadow-sm flex items-center gap-1';
+                bG.className = 'px-2.5 py-1 rounded-lg font-bold text-[11px] transition text-slate-600 hover:text-slate-900 flex items-center gap-1';
+                setTimeout(() => { if (heroMap) heroMap.invalidateSize(); }, 200);
+            }
+        };
 
         function renderShipmentOnMap(index) {
             const data = sampleShipments[index];
@@ -671,8 +775,18 @@
                 opacity: 0.95
             }).addTo(heroMap);
 
-            // Fit bounds smoothly
+            // Fit bounds smoothly on Leaflet
             heroMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+
+            // Fly 3D Globe camera smoothly to the active vessel coords
+            if (heroGlobe) {
+                heroGlobe.controls().autoRotate = false;
+                heroGlobe.pointOfView({
+                    lat: data.vesselCoords[0],
+                    lng: data.vesselCoords[1],
+                    altitude: 1.6
+                }, 1400);
+            }
         }
 
         function selectShipmentPreview(index) {
