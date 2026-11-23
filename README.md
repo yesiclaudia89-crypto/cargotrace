@@ -1,4 +1,4 @@
-# 🚢 CargoTrace — Global Maritime Shipment Visibility & Delay Detection Engine
+# 🚢 CargoTrace — Global Maritime Shipment Visibility & Delay Engine
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
@@ -8,101 +8,101 @@
 [![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel&logoColor=white)](https://cargotrace-791x.vercel.app)
 [![Tests](https://img.shields.io/badge/Automated_Tests-44_Passed-22c55e?style=for-the-badge&logo=githubactions&logoColor=white)](https://phpunit.de)
 
-> **Portofolio Proyek Akhir UAS Pemrograman Web 2 (Tahun Akademik 2025/2026)**  
-> Platform kelas enterprise untuk pemantauan visibilitas logistik pengiriman kargo maritim global berbasis Laravel 12 dan WebGL Three.js. Dilengkapi pemetaan rute 3D Globe Samudra interaktif, sensor cuaca laut real-time, kalkulasi keterlambatan jadwal otomatis (*Deterministic Delay Detection Engine*), manajemen kendala operasional (*Exception Logging*), simulasi pembayaran tagihan *freight* (Midtrans Sandbox), cetak resi resmi (*Bill of Lading*), serta REST API yang diamankan Laravel Sanctum.
+> **Web Programming 2 (Pemrograman Web 2) — Final UAS Project Portfolio**  
+> An enterprise-grade, end-to-end container tracking & maritime logistics visibility platform featuring an interactive 3D Earth Globe (Three.js & Globe.gl), real-time high-resolution satellite GPS route mapping (Leaflet.js & Esri), live maritime weather telemetry (Open-Meteo API), deterministic schedule delay calculation, operational exception management, automated freight billing settlement simulation (Midtrans), official maritime printable Waybills (Bill of Lading), and Sanctum-protected REST APIs.
 
 ---
 
-## 🌐 Tautan Aplikasi Siap Pakai (Live Production)
+## 🌐 Live Production Application
 
-* 🚀 **Web Aplikasi Produksi (Vercel):** [https://cargotrace-791x.vercel.app](https://cargotrace-791x.vercel.app)
-* 🗺️ **Demo Pelacakan 3D Publik:** [https://cargotrace-791x.vercel.app/track/CT-2026-001](https://cargotrace-791x.vercel.app/track/CT-2026-001)
-* 🖨️ **Demo Cetak Resi (Bill of Lading):** [https://cargotrace-791x.vercel.app/track/CT-2026-001/print](https://cargotrace-791x.vercel.app/track/CT-2026-001/print)
-* 🔐 **Login Internal (1-Klik Akun Dosen):** [https://cargotrace-791x.vercel.app/login](https://cargotrace-791x.vercel.app/login)
-
----
-
-## 📌 Daftar Isi
-1. [Latar Belakang & Masalah Logistik Maritim](#-latar-belakang--masalah-logistik-maritim)
-2. [Fitur Unggulan Arsitektur Sistem](#-fitur-unggulan-arsitektur-sistem)
-3. [Diagram Relasi Database (ERD)](#-diagram-relasi-database-erd)
-4. [Matriks Hak Akses & Peran Pengguna (RBAC)](#-matriks-hak-akses--peran-pengguna-rbac)
-5. [Daftar Akun Demo Pengujian](#-daftar-akun-demo-pengujian)
-6. [Fitur Cetak Resi Resmi (Bill of Lading)](#-fitur-cetak-resi-resmi-bill-of-lading)
-7. [Panduan Instalasi & Menjalankan di Lokal](#-panduan-instalasi--menjalankan-di-lokal)
-8. [Dokumentasi REST API (Sanctum)](#-dokumentasi-rest-api-sanctum)
-9. [Hasil Pengujian Otomatis (Automated Tests)](#-hasil-pengujian-otomatis-automated-tests)
+* 🚀 **Production Web App (Vercel):** [https://cargotrace-791x.vercel.app](https://cargotrace-791x.vercel.app)
+* 🗺️ **Interactive 3D Public Tracking Demo:** [https://cargotrace-791x.vercel.app/track/CT-2026-001](https://cargotrace-791x.vercel.app/track/CT-2026-001)
+* 🖨️ **Printable Maritime Waybill (Bill of Lading):** [https://cargotrace-791x.vercel.app/track/CT-2026-001/print](https://cargotrace-791x.vercel.app/track/CT-2026-001/print)
+* 🔐 **Internal Portal Login (1-Click Lecturer Demo):** [https://cargotrace-791x.vercel.app/login](https://cargotrace-791x.vercel.app/login)
 
 ---
 
-## 🌊 Latar Belakang & Masalah Logistik Maritim
-
-Lebih dari 80% volume perdagangan internasional diangkut menggunakan kontainer kargo melalui jalur laut. Namun, proses pemantauan logistik samudra sering menghadapi kendala nyata:
-* **Titik Buta Samudra (*Information Blind Spot*):** Pemilik kargo dan pihak operasional kerap kehilangan visibilitas posisi kapal saat berada di tengah laut lepas.
-* **Keterlambatan Akibat Cuaca Buruk:** Badai tropis dan gelombang laut tinggi kerap menunda jadwal kapal sandar (*berthing*), namun estimasi waktu tiba (ETA) jarang diperbarui secara dinamis.
-* **Pencatatan Kendala yang Terfragmentasi:** Hambatan bea cukai, insiden mesin, atau penumpukan dermaga (*port congestion*) dicatat manual sehingga lambat dimitigasi.
-* **Hambatan Administrasi Pembayaran:** Tertundanya konfirmasi pembayaran ongkos kargo menghambat pelepasan kontainer di pelabuhan.
-
-**CargoTrace** hadir memecahkan seluruh tantangan tersebut melalui sistem cerdas berbasis *Deterministic Finite State Machine*, integrasi data telemetri cuaca maritim eksternal, dan visualisasi 3D yang interaktif.
+## 📌 Table of Contents
+1. [Project Overview & Key Objectives](#-project-overview--key-objectives)
+2. [Key Architecture & Features](#-key-architecture--features)
+3. [Database Entity Relationship Diagram (ERD)](#-database-entity-relationship-diagram-erd)
+4. [User Roles & Permissions Matrix](#-user-roles--permissions-matrix)
+5. [Demo Accounts & Credentials](#-demo-accounts--credentials)
+6. [Printable Maritime Waybill (Bill of Lading)](#-printable-maritime-waybill-bill-of-lading)
+7. [Installation & Local Setup Guide](#-installation--local-setup-guide)
+8. [REST API Documentation & Postman Collection](#-rest-api-documentation--postman-collection)
+9. [Automated Feature Testing](#-automated-feature-testing)
 
 ---
 
-## 🛠️ Fitur Unggulan Arsitektur Sistem
+## 🌐 Project Overview & Key Objectives
 
-### 1. Visualisasi 3D Globe Samudra & Peta Satelit Taktis (Three.js & Leaflet)
-* **Bola Bumi 3D Interaktif (Three.js & Globe.gl):** Merender kelengkungan bumi sejati (*Great Circle Arc*) 360° dengan koordinat pelabuhan asal, posisi kapal, dan pelabuhan tujuan, disertai animasi denyut radar sonar di lokasi kargo.
-* **Peta Satelit Maritim Berperspektif 3D (Leaflet.js + Esri World Imagery):** Menampilkan rute lintasan kapal dengan efek sudut kemiringan 3D (*perspective tilt*), kontrol zoom dinamis, dan pemilih layer (*Satelit vs Peta Vektor OSM*).
-* **Smart Camera Focus:** Tombol instan untuk mengarahkan kamera 3D ke posisi kapal atau melihat keseluruhan lintasan rute samudra.
+International container shipping represents over 80% of global trade volume. However, logistics visibility across open ocean transit frequently suffers from critical operational challenges:
+* **Information Blind Spots:** Unclear vessel positions during open-sea transit.
+* **Weather Disruption Delays:** Tropical storms and rough swells cause schedule slippage that is rarely reflected dynamically in real-time ETAs.
+* **Fragmented Exception Handling:** Customs holds, congestion, and technical disruptions are recorded manually rather than systematically.
+* **Unclear Freight Settlement:** Delays in freight fee clearance block container handovers.
 
-### 2. Integrasi Sensor Cuaca Maritim Real-Time (Open-Meteo API)
-* Terhubung langsung ke API meteorologi laut global menggunakan **Laravel HTTP Client** terenkripsi.
-* Membaca kondisi cuaca, suhu udara permukaan laut (°C), dan kecepatan angin (km/h) secara spesifik di koordinat latitude dan longitude terakhir kapal berlayar.
-* **Prinsip Fault Tolerance (Graceful Degradation):** Dibekali batas timeout 4 detik dan sistem *Safe Fallback Data*, sehingga aplikasi dijamin tidak akan pernah mengalami error layar putih meskipun server API cuaca luar sedang lambat atau offline.
+**CargoTrace** addresses these requirements through a robust, full-stack Laravel 12 application with deterministic state machines, automated mathematical delay metrics, external HTTP API telemetry, WebGL Three.js 3D globes, and interactive satellite map rendering.
 
-### 3. Mesin Deteksi Keterlambatan Otomatis (*Deterministic Delay Detection Engine*)
-Sistem mengevaluasi selisih antara jadwal rencana tiba awal ($\text{ETA}_{\text{initial}}$) dengan jadwal estimasi aktual terkini ($\text{ETA}_{\text{actual}}$):
+---
 
-$$\text{Deviasi Keterlambatan (Jam)} = \max\left(0, \frac{\text{ETA}_{\text{aktual}} - \text{ETA}_{\text{awal}}}{3600}\right)$$
+## 🛠️ Key Architecture & Features
 
-| Selisih Keterlambatan ($\Delta$) | Label Status | Penjelasan & Tindakan |
+### 1. Interactive 3D Earth Globe & Tactical Satellite Map (Three.js & Leaflet)
+* **3D Earth Globe (Three.js & Globe.gl):** Renders true Great Circle curved maritime arcs in 360° orbital 3D with pulsating radar sonar beacon rings at vessel coordinates and day/night atmospheric textures.
+* **Tactical 3D Satellite Map (Leaflet.js + Esri World Imagery):** Features a high-resolution ocean satellite perspective tilt, dynamic fractional zooming (`zoomSnap: 0.25`), and instant layer switching (Satellite vs. Vector OSM).
+* **Smart Camera Focus:** One-click orbital fly-to buttons targeting active vessels or framing entire transoceanic voyage routes.
+
+### 2. Live Maritime Weather API Integration (Slide 9 & 15)
+* Powered by `WeatherService` via Laravel HTTP Client (`Http::timeout(4)->get('https://api.open-meteo.com/v1/forecast', ...)`).
+* Automatically extracts the exact latitude and longitude of the vessel's latest tracking waypoint.
+* Provides live maritime temperature (°C), wind speed (km/h & knots), and WMO sea condition descriptions.
+* **Fault Tolerance & Graceful Degradation:** Built-in 4-second timeout with safe maritime fallback data guarantees zero 500 error screens even if external APIs experience downtime.
+
+### 3. Deterministic Delay Calculation Engine (Slide 9)
+Evaluates the difference between Expected Arrival ($\text{ETA}_{\text{initial}}$) and Dynamic Estimated Arrival ($\text{ETA}_{\text{actual}}$):
+
+$$\Delta_{\text{delay}} = \max\left(0, \frac{\text{ETA}_{\text{estimated}} - \text{ETA}_{\text{expected}}}{3600}\right) \quad (\text{hours})$$
+
+| Delay Hours ($\Delta$) | Status Badge | Description & Action |
 |---|---|---|
-| $\Delta \le 0$ jam | `ON_TIME` | Kapal berlayar tepat waktu sesuai jadwal. |
-| $1 \le \Delta \le 4$ jam | `MINOR_DELAY` | Deviasi ringan (antrean pandu / pasang surut air laut). |
-| $5 \le \Delta \le 12$ jam | `MEDIUM_DELAY` | Keterlambatan sedang (badai laut / cuaca buruk Selat Karimata). |
-| $\Delta > 12$ jam | `CRITICAL_DELAY` | Keterlambatan kritis (kerusakan mesin / pemeriksaan karantina pelabuhan). |
+| $\Delta \le 0$ | `ON_TIME` | Voyage proceeding on schedule. |
+| $1 \le \Delta \le 4$ | `MINOR_DELAY` | Slight delay (speed reduction / tidal wait). |
+| $5 \le \Delta \le 12$ | `MEDIUM_DELAY` | Moderate delay (tropical rainstorm / minor port wait). |
+| $\Delta > 12$ | `CRITICAL_DELAY` | Severe disruption (typhoon hold / customs quarantine). |
 
-### 4. Siklus Status Kargo Ketat (*Finite State Machine*)
-Perubahan status kargo wajib mengikuti alur bisnis baku yang terkunci di model `Shipment.php`:
+### 4. Shipment Lifecycle State Machine (Slide 6)
+Cargo status transitions follow strict deterministic business rules defined in `Shipment::VALID_TRANSITIONS`:
 
 $$\text{CREATED} \longrightarrow \text{BOOKED} \longrightarrow \text{PICKED\_UP} \longrightarrow \text{IN\_TRANSIT} \longrightarrow \text{DELIVERED}$$
 
-* Status `CREATED` dan `BOOKED` dapat dialihkan menjadi `CANCELLED`.
-* Status `DELIVERED` dan `CANCELLED` bersifat final (*terminal state*) dan terkunci permanen.
-* Lompatan status ilegal (contoh: langsung dari `CREATED` ke `DELIVERED`) otomatis ditolak oleh validasi sistem.
+* Both `CREATED` and `BOOKED` can transition to `CANCELLED`.
+* `DELIVERED` and `CANCELLED` are terminal states.
+* Direct jumps (e.g. `CREATED` $\rightarrow$ `DELIVERED`) are strictly rejected by the server with `422 Unprocessable Entity`.
 
-### 5. Simulasi Pembayaran Tagihan Freight (Midtrans Payment Gateway)
-* Sesuai mandat skenario UAS: kustomer dapat melunasi tagihan pengiriman kontainer via simulasi Snap Payment Gateway.
-* Saat kustomer mengonfirmasi pembayaran $\rightarrow$ status otomatis berubah dari `CREATED` (`UNPAID`) menjadi `BOOKED` (`PAID`), serta otomatis menerbitkan milestone pembayaran pada riwayat perjalanan kargo.
+### 5. Midtrans Payment Settlement Simulation (Slide 7)
+* Integrated freight payment simulation: Customer clicks **"Bayar Sekarang"** $\rightarrow$ Simulates Midtrans Snap payment settlement $\rightarrow$ Transitions status from `CREATED` (`UNPAID`) to `BOOKED` (`PAID`) and appends an automated `PAYMENT_SETTLED` milestone to the tracking timeline.
 
-### 6. Pelacakan Publik Tanpa Login (*Public Tracking*)
-* Dapat diakses bebas oleh siapa saja di `/track/{nomor_resi}` tanpa syarat login/registrasi.
-* Dilengkapi kolom pencarian resi cepat (*Fast Search*) dan sampel kargo uji coba.
+### 6. Public Tracking Portal (Slide 10)
+* Accessible at `/track/{shipment_number}` without requiring user login.
+* End-customers can track containers, interact with the 3D globe, view the milestone timeline, and check live maritime weather.
 
 ---
 
-## 🗄️ Diagram Relasi Database (ERD)
+## 🗄️ Database Entity Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
-    USERS ||--o{ SHIPMENTS : "memesan/memiliki"
-    CARRIERS ||--o{ SHIPMENTS : "mengoperasikan"
-    LOCATIONS ||--o{ SHIPMENTS : "pelabuhan_asal"
-    LOCATIONS ||--o{ SHIPMENTS : "pelabuhan_tujuan"
-    SHIPMENTS ||--o{ SHIPMENT_ITEMS : "memuat_komoditas"
-    SHIPMENTS ||--o{ TRACKING_EVENTS : "riwayat_peristiwa"
-    SHIPMENTS ||--o{ SHIPMENT_EXCEPTIONS : "catatan_kendala"
-    LOCATIONS ||--o{ TRACKING_EVENTS : "terjadi_di"
-    LOCATIONS ||--o{ SHIPMENT_EXCEPTIONS : "lokasi_kendala"
+    USERS ||--o{ SHIPMENTS : "places/owns"
+    CARRIERS ||--o{ SHIPMENTS : "operates"
+    LOCATIONS ||--o{ SHIPMENTS : "origin_port"
+    LOCATIONS ||--o{ SHIPMENTS : "destination_port"
+    SHIPMENTS ||--o{ SHIPMENT_ITEMS : "contains"
+    SHIPMENTS ||--o{ TRACKING_EVENTS : "records"
+    SHIPMENTS ||--o{ SHIPMENT_EXCEPTIONS : "logs"
+    LOCATIONS ||--o{ TRACKING_EVENTS : "occurs_at"
+    LOCATIONS ||--o{ SHIPMENT_EXCEPTIONS : "located_at"
 
     USERS {
         bigint id PK
@@ -179,92 +179,91 @@ erDiagram
 
 ---
 
-## 👥 Matriks Hak Akses & Peran Pengguna (RBAC)
+## 👥 User Roles & Permissions Matrix
 
-Sistem menerapkan pembatasan akses berbasis peran (*Role-Based Access Control*) dan otorisasi kepemilikan kargo (*Multi-Tenancy Scoping*):
+The platform enforces strict Role-Based Access Control (RBAC) and multi-tenant resource isolation:
 
-| Fitur / Tindakan | 👑 Administrator | 🛠️ Operator Logistik | 👤 Kustomer Kargo | 🌐 Tamu Publik |
+| Feature / Action | 👑 Administrator | 🛠️ Logistics Operator | 👤 Cargo Customer | 🌐 Public Guest |
 |---|:---:|:---:|:---:|:---:|
-| **Pelacakan Publik 3D (`/track/{resi}`)** | ✅ | ✅ | ✅ | ✅ |
-| **Cetak Resi Resmi (`/track/{resi}/print`)** | ✅ | ✅ | ✅ | ✅ |
-| **Melihat Daftar Kargo (`/shipments`)** | ✅ *(Semua)* | ✅ *(Semua)* | ✅ *(Hanya Milik Sendiri)* | ❌ |
-| **Membuat Kargo Baru (`/shipments/create`)** | ✅ | ✅ | ❌ | ❌ |
-| **Input Event Pelacakan & Koordinat GPS** | ✅ | ✅ | ❌ | ❌ |
-| **Mencatat Gangguan Operasional (*Exception*)** | ✅ | ✅ | ❌ | ❌ |
-| **Pelunasan Biaya Pengiriman (*Freight Payment*)** | ✅ | ✅ | ✅ *(Kargo Sendiri)* | ❌ |
-| **Kelola Master Maskapai & Pelabuhan** | ✅ | ❌ | ❌ | ❌ |
-| **Akses REST API Sanctum** | ✅ | ✅ | ✅ *(Scoped)* | ❌ *(Wajib Token)* |
+| **Public Tracking (`/track/{id}`)** | ✅ | ✅ | ✅ | ✅ |
+| **Print Official Waybill (`/track/{id}/print`)** | ✅ | ✅ | ✅ | ✅ |
+| **View Own Shipments** | ✅ *(All)* | ✅ *(All)* | ✅ *(Own Only)* | ❌ |
+| **Create New Shipment Booking** | ✅ | ✅ | ❌ | ❌ |
+| **Update Tracking Event & GPS** | ✅ | ✅ | ❌ | ❌ |
+| **Log Operational Exception** | ✅ | ✅ | ❌ | ❌ |
+| **Freight Payment Settlement** | ✅ | ✅ | ✅ *(Own Cargo)* | ❌ |
+| **Manage Carriers & Locations** | ✅ | ❌ | ❌ | ❌ |
+| **Sanctum REST API Access** | ✅ | ✅ | ✅ *(Scoped)* | ❌ *(Login/Master only)* |
 
-> 🛡️ **Keamanan Otorisasi:** Jika pengguna dengan role `Customer` mencoba membuka atau memodifikasi ID kargo milik kustomer lain, sistem secara otomatis menolak dengan kode keamanan **`403 Forbidden`**.
+> 🛡️ **Multi-Tenant Protection:** If a authenticated Customer attempts to access or modify shipment records belonging to another account, the application immediately aborts with an HTTP `403 Forbidden` response.
 
 ---
 
-## 🔑 Daftar Akun Demo Pengujian
+## 🔑 Demo Accounts & Credentials
 
-Semua akun di bawah ini telah disiapkan di database dan siap digunakan untuk pengujian:
+The system comes pre-seeded with sample users for each role:
 
-| Role Pengguna | Alamat Email | Kata Sandi (*Password*) | Kegunaan Pengujian |
+| Role | Email Address | Password | Description / Testing Purpose |
 |---|---|---|---|
-| **Administrator** | `admin@cargotrace.test` | `password` | Akses penuh manajemen armada, pelabuhan, kargo, & log kendala |
-| **Logistics Operator** | `operator@cargotrace.test` | `password` | Input milestone pelacakan GPS, update status kargo, & catat kendala |
-| **Cargo Customer 1** | `customer@cargotrace.test` | `password` | Pemilik kargo `CT-2026-001` (In Transit - Delay) & `CT-2026-003` (Unpaid) |
-| **Cargo Customer 2** | `customer2@cargotrace.test` | `password` | Pemilik kargo `CT-2026-002` (Uji coba isolasi hak akses data antar kustomer) |
+| **Administrator** | `admin@cargotrace.test` | `password` | Full system control (shipments, carriers, ports, logs) |
+| **Logistics Operator** | `operator@cargotrace.test` | `password` | Day-to-day operations (tracking updates & exception logging) |
+| **Cargo Customer 1** | `customer@cargotrace.test` | `password` | Owner of `CT-2026-001` (Delayed) and `CT-2026-003` (Unpaid) |
+| **Cargo Customer 2** | `customer2@cargotrace.test` | `password` | Owner of `CT-2026-002` (Delivered) for multi-tenant isolation testing |
 
-> 💡 **Fitur Cepat:** Di halaman login web (`/login`), Anda cukup mengklik tombol **"1-Klik Akun Dosen"** untuk langsung masuk sebagai Administrator tanpa mengetik kata sandi.
-
----
-
-## 🖨️ Fitur Cetak Resi Resmi (Bill of Lading)
-
-Aplikasi menyediakan fitur pencetakan dokumen resmi bukti pengiriman maritim (*Waybill / Bill of Lading*):
-1. **Tata Letak Standar Dokumen Kargo Laut:** Memuat nomor resi (*Waybill No.*), barcode/QR digital verification seal, identitas pengirim (*Shipper*), maskapai pelayaran (*Carrier*), pelabuhan muat & bongkar (*Port of Loading & Discharge*), rincian manifest kontainer, serta total biaya freight.
-2. **Siap Cetak & Ekspor PDF:** Didukung stylesheet cetak `@media print` sehingga saat tombol **"Cetak / Simpan PDF"** diklik, halaman otomatis membuka dialog printer bersih tanpa elemen navigasi browser yang mengganggu.
-3. **Aksesibel dari Banyak Titik:** Tombol cetak tersedia di halaman detail kargo internal, tabel daftar kargo, maupun di halaman pelacakan 3D publik.
+> 💡 **Convenience Feature:** On the login page (`/login`), click the **"1-Klik Akun Dosen"** button to instantly authenticate as Administrator without typing credentials.
 
 ---
 
-## 💻 Panduan Instalasi & Menjalankan di Lokal
+## 🖨️ Printable Maritime Waybill (Bill of Lading)
 
-### Kebutuhan Sistem:
-* PHP >= 8.2 (Ekstensi: `pdo_sqlite` atau `pdo_mysql`, `curl`, `mbstring`, `openssl`)
+The application provides an official, print-ready Bill of Lading (B/L) and shipping receipt:
+* **International Maritime Layout:** Includes Waybill tracking number, digital verification seal, Shipper and Carrier identity, Port of Loading and Discharge, container manifest, and freight billing status.
+* **One-Click PDF Export:** Styled with `@media print` CSS rules so clicking **"Cetak / Simpan PDF"** produces a pristine document without browser navigation bars.
+* Accessible from internal shipment detail views, shipment lists, and public tracking pages.
+
+---
+
+## 💻 Installation & Local Setup Guide
+
+### System Prerequisites:
+* PHP >= 8.2 (Required extensions: `pdo_sqlite` or `pdo_mysql`, `curl`, `mbstring`, `openssl`)
 * Composer 2.x
 * Node.js >= 18.x & NPM
 
-### Langkah Menjalankan:
+### Setup Instructions:
 ```bash
-# 1. Clone repository GitHub
+# 1. Clone repository
 git clone https://github.com/yesiclaudia89-crypto/cargotrace.git
 cd cargotrace
 
-# 2. Install dependensi PHP & JavaScript
+# 2. Install PHP and Node dependencies
 composer install
 npm install
 
-# 3. Salin file konfigurasi environment
+# 3. Environment configuration
 cp .env.example .env
 
 # 4. Generate Application Key
 php artisan key:generate
 
-# 5. Jalankan migrasi dan seeder database
+# 5. Run database migrations with seed data
 php artisan migrate:fresh --seed
 
-# 6. Kompilasi aset frontend
+# 6. Build frontend assets
 npm run build
 
-# 7. Jalankan server lokal Laravel
+# 7. Start local development server
 php artisan serve
 ```
-Akses server lokal Anda di: `http://127.0.0.1:8000`
+Open your browser at `http://127.0.0.1:8000`.
 
 ---
 
-## 📡 Dokumentasi REST API (Sanctum)
+## 📡 REST API Documentation & Postman Collection
 
-Seluruh endpoint API dilindungi oleh otentikasi token **Laravel Sanctum**.
+All protected endpoints require an `Authorization: Bearer <token>` header issued by Laravel Sanctum.
 
-### 1. Otentikasi Login (Mendapatkan Token)
-* **Endpoint:** `POST /api/v1/login`
+### 1. Authentication (`POST /api/v1/login`)
 * **Headers:** `Accept: application/json`, `Content-Type: application/json`
 * **Request Body:**
 ```json
@@ -273,10 +272,10 @@ Seluruh endpoint API dilindungi oleh otentikasi token **Laravel Sanctum**.
   "password": "password"
 }
 ```
-* **Respon Sukses (`200 OK`):**
+* **Response (`200 OK`):**
 ```json
 {
-  "message": "Login berhasil.",
+  "message": "Login successful.",
   "access_token": "1|raND0mToK3nStR1ng...",
   "token_type": "Bearer",
   "user": {
@@ -287,25 +286,27 @@ Seluruh endpoint API dilindungi oleh otentikasi token **Laravel Sanctum**.
 }
 ```
 
-### 2. Pelacakan Kargo via API (Publik)
-* **Endpoint:** `GET /api/v1/track/{shipment_number}`
-* **Contoh:** `GET /api/v1/track/CT-2026-001`
-* **Respon:** Mengembalikan data JSON lengkap berisi informasi kargo, status perjalanan, deviasi keterlambatan jam, koordinat GPS kapal, data cuaca live Open-Meteo, dan riwayat milestone.
+### 2. Public Tracking (`GET /api/v1/track/{shipment_number}`)
+* **Example:** `GET /api/v1/track/CT-2026-001`
+* **Response:** Returns JSON representation including cargo specs, current voyage leg, delay metrics, latest GPS coordinates, live Open-Meteo weather telemetry, and milestone timeline.
 
-### 3. Mengambil Profil Pengguna Terotentikasi
-* **Endpoint:** `GET /api/v1/me`
-* **Headers:** `Authorization: Bearer <token_anda>`
+### 3. Authenticated Profile (`GET /api/v1/me`)
+* **Headers:** `Authorization: Bearer <token>`
 
-### 4. Logout (Mencabut Token)
-* **Endpoint:** `POST /api/v1/logout`
-* **Headers:** `Authorization: Bearer <token_anda>`
+### 4. Logout (`POST /api/v1/logout`)
+* **Headers:** `Authorization: Bearer <token>`
 
 ---
 
-## 🧪 Hasil Pengujian Otomatis (Automated Tests)
+## 🧪 Automated Feature Testing
 
-Integritas arsitektur logika sistem diuji secara otomatis menggunakan **PHPUnit / Pest Test Runner**. Seluruh **44 automated tests** terbukti lulus 100% tanpa kegagalan:
+The project includes an extensive test suite verifying all critical business rules mandated by the project requirements:
 
+```bash
+php artisan test
+```
+
+### Execution Results:
 ```text
    PASS  Tests\Unit\ExampleTest
   ✓ that true is true
@@ -343,11 +344,11 @@ Integritas arsitektur logika sistem diuji secara otomatis menggunakan **PHPUnit 
   ✓ cancellation rules
 
   Tests:    44 passed (122 assertions)
-  Duration: 8.84s
+  Duration: ~8.5s
 ```
 
 ---
 
 <p align="center">
-  Dikembangkan dengan ❤️ untuk Tugas Akhir UAS Pemrograman Web 2 &copy; 2026 CargoTrace Maritime Visibility Engine.
+  Developed with ❤️ for UAS Pemrograman Web 2 &copy; 2026 CargoTrace Maritime Visibility Engine.
 </p>
