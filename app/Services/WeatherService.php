@@ -23,15 +23,19 @@ class WeatherService
 
             if ($response->successful()) {
                 $data = $response->json('current_weather');
+                $cond = $this->interpretWeatherCode($data['weathercode'] ?? 0);
                 
                 return [
                     'status' => 'success',
                     'available' => true,
-                    'temperature' => $data['temperature'] ?? null,
-                    'windspeed' => $data['windspeed'] ?? null,
-                    'winddirection' => $data['winddirection'] ?? null,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'temperature' => $data['temperature'] ?? 28.0,
+                    'windspeed' => $data['windspeed'] ?? 14.0,
+                    'winddirection' => $data['winddirection'] ?? 90,
                     'weather_code' => $data['weathercode'] ?? 0,
-                    'condition' => $this->interpretWeatherCode($data['weathercode'] ?? 0),
+                    'condition' => $cond,
+                    'description' => $cond,
                     'time' => $data['time'] ?? now()->toIso8601String(),
                 ];
             }
@@ -46,11 +50,14 @@ class WeatherService
         return [
             'status' => 'fallback',
             'available' => false,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
             'temperature' => 28.5,
             'windspeed' => 12.0,
             'winddirection' => 90,
             'weather_code' => 1,
             'condition' => 'Berawan Sebagian (Kondisi Laut Normal)',
+            'description' => 'Berawan Sebagian (Kondisi Laut Normal)',
             'time' => now()->toIso8601String(),
         ];
     }

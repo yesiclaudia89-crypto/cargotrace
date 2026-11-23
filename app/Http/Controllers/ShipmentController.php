@@ -137,12 +137,23 @@ class ShipmentController extends Controller
      */
     public function publicTrack(Request $request, ?string $tracking_number = null): View
     {
-        $query = $tracking_number ?? $request->query('search') ?? $request->query('tracking_number') ?? 'CT-2026-001';
+        $rawQuery = $tracking_number 
+            ?? $request->query('tracking_number') 
+            ?? $request->query('number') 
+            ?? $request->query('search') 
+            ?? 'CT-2026-001';
+
+        $query = trim((string) $rawQuery);
 
         $shipment = Shipment::where('shipment_number', $query)->first();
 
         if (! $shipment) {
-            $shipment = Shipment::firstOrFail();
+            $shipment = Shipment::where('shipment_number', 'like', "%{$query}%")->first() 
+                ?? Shipment::first();
+        }
+
+        if (! $shipment) {
+            abort(404, 'Data kargo tidak ditemukan di sistem.');
         }
 
         $shipment->load([
@@ -156,8 +167,8 @@ class ShipmentController extends Controller
         ]);
 
         $latestCoordEvent = $shipment->trackingEvents->filter(fn ($e) => ! empty($e->latitude) && ! empty($e->longitude))->last();
-        $targetLat = (float) ($latestCoordEvent?->latitude ?? $shipment->origin->latitude);
-        $targetLng = (float) ($latestCoordEvent?->longitude ?? $shipment->origin->longitude);
+        $targetLat = (float) ($latestCoordEvent?->latitude ?? $shipment->origin?->latitude ?? -6.1044);
+        $targetLng = (float) ($latestCoordEvent?->longitude ?? $shipment->origin?->longitude ?? 106.8833);
 
         $weatherService = app(\App\Services\WeatherService::class);
         $weather = $weatherService->getMaritimeWeather($targetLat, $targetLng);

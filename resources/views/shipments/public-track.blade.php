@@ -9,11 +9,23 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Three.js & Globe.gl Assets for Interactive 3D Earth Globe -->
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
+
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <style>
+        #globeContainer canvas {
+            outline: none;
+            cursor: grab;
+            border-radius: 1.25rem;
+        }
+        #globeContainer canvas:active {
+            cursor: grabbing;
+        }
         .map-3d-wrap {
             perspective: 1200px;
             transition: all 0.5s ease;
@@ -87,8 +99,8 @@
             <form action="{{ route('shipments.public-track') }}" method="GET" class="flex items-center gap-2 w-full sm:w-auto flex-1 max-w-md">
                 <input 
                     type="text" 
-                    name="number" 
-                    placeholder="Ketik No. Resi (misal: CT-2026-002)..." 
+                    name="tracking_number" 
+                    placeholder="Ketik No. Resi (misal: CT-2026-001)..." 
                     value="{{ $shipment->shipment_number }}"
                     class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -113,7 +125,7 @@
                     <span class="text-base text-slate-500 font-normal">({{ $shipment->cargo_type }})</span>
                 </h1>
                 <p class="text-xs text-slate-500 mt-1">
-                    Carrier: <strong class="text-slate-800">{{ $shipment->carrier->name }}</strong> • Kode: <span class="font-mono text-blue-600 font-bold">{{ $shipment->carrier->code }}</span>
+                    Carrier: <strong class="text-slate-800">{{ $shipment->carrier?->name ?? 'Samudera Shipping Line' }}</strong> • Kode: <span class="font-mono text-blue-600 font-bold">{{ $shipment->carrier?->code ?? 'SSL' }}</span>
                 </p>
             </div>
 
@@ -175,64 +187,86 @@
             <!-- LEFT 7 COLS: INTERACTIVE 3D MAP & WEATHER -->
             <div class="lg:col-span-7 space-y-6">
 
-                <!-- 3D LEAFLET MAP CONTAINER -->
+                <!-- 3D VIEW CONTAINER -->
                 <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-xl shadow-slate-200/60 space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-slate-100 gap-3">
                         <div class="flex items-center gap-2">
-                            <span class="text-base">🗺️</span>
-                            <span class="font-bold text-sm text-slate-900">Peta 3D Lintasan Maritim & Radar Kapal</span>
+                            <span class="text-base">🌐</span>
+                            <span class="font-bold text-sm text-slate-900">Visualisasi 3D Lintasan Maritim & Radar Kapal</span>
                         </div>
 
-                        <!-- 3D & Layer Controls -->
-                        <div class="flex flex-wrap items-center gap-2 text-xs">
-                            <button type="button" onclick="togglePublic3D()" id="btnPublic3D" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm">
-                                📐 Mode 3D: Aktif
+                        <!-- 3D Globe & Map Switcher Tabs -->
+                        <div class="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl text-xs">
+                            <button type="button" onclick="switchPublicView('globe')" id="btnPublicGlobe" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm flex items-center gap-1">
+                                <span>🌍</span> 3D Globe
                             </button>
-                            <button type="button" onclick="setPublicLayer('sat')" id="pLayerSat" class="px-2 py-1 rounded-lg bg-slate-800 text-white font-bold transition">
-                                🛰️ Satelit
+                            <button type="button" onclick="switchPublicView('sat')" id="btnPublicSat" class="px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1">
+                                <span>🛰️</span> Satelit
                             </button>
-                            <button type="button" onclick="setPublicLayer('osm')" id="pLayerOsm" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition">
-                                🏙️ Peta
+                            <button type="button" onclick="switchPublicView('osm')" id="btnPublicOsm" class="px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1">
+                                <span>🏙️</span> Peta Vektor
                             </button>
                         </div>
                     </div>
 
-                    <!-- Map Focus Toolbar -->
-                    <div class="flex flex-wrap items-center justify-between text-xs gap-2">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-400 text-[11px] font-medium">Fokus Kamera:</span>
-                            <button type="button" onclick="focusFullRoute()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs border border-slate-200 transition font-bold">
-                                🔍 Seluruh Rute
-                            </button>
-                            <button type="button" onclick="focusVessel()" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs border border-blue-200 transition font-bold flex items-center gap-1">
-                                <span>🚢</span>
-                                <span>Posisi Kapal</span>
-                            </button>
+                    <!-- 1. THREE.JS 3D EARTH GLOBE VIEW -->
+                    <div id="globePublicWrap" class="w-full flex justify-center items-center bg-slate-950 rounded-2xl overflow-hidden relative shadow-inner" style="height: 440px; min-height: 440px;">
+                        <div id="globeContainer" class="w-full h-full"></div>
+                        <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/70 text-[11px] text-slate-300 pointer-events-none flex items-center gap-2">
+                            <span>🖱️</span>
+                            <span>Drag untuk putar bola bumi 360° • Scroll zoom</span>
                         </div>
-                        <div class="text-[11px] text-slate-500 font-mono">
-                            Kecepatan: <strong class="text-slate-800">{{ $shipment->status === 'IN_TRANSIT' ? '14.6 Knots' : '0.0 Knots' }}</strong>
+                        <div class="absolute top-3 right-3 flex items-center gap-2">
+                            <button type="button" onclick="resetPublicGlobeCamera()" class="px-2.5 py-1 bg-slate-900/80 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg border border-slate-700 transition shadow">
+                                🎯 Fokus Kapal
+                            </button>
+                            <button type="button" onclick="togglePublicGlobeTexture()" id="btnThemePublic" class="px-2.5 py-1 bg-slate-900/80 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg border border-slate-700 transition shadow">
+                                🌙 Siang/Malam
+                            </button>
                         </div>
                     </div>
 
-                    <!-- 3D Map Box -->
-                    <div id="publicMapWrap" class="map-3d-wrap mode-3d">
-                        <div id="map" class="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner z-0 bg-slate-900" style="height: 420px; min-height: 420px;"></div>
+                    <!-- 2. LEAFLET TACTICAL 3D SATELLITE / OSM MAP (Hidden by default, shown when switched) -->
+                    <div id="leafletPublicWrap" class="hidden space-y-3">
+                        <div class="flex flex-wrap items-center justify-between text-xs gap-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-slate-400 text-[11px] font-medium">Kamera:</span>
+                                <button type="button" onclick="focusFullRoute()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs border border-slate-200 transition font-bold">
+                                    🔍 Seluruh Rute
+                                </button>
+                                <button type="button" onclick="focusVessel()" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs border border-blue-200 transition font-bold flex items-center gap-1">
+                                    <span>🚢</span> Posisi Kapal
+                                </button>
+                            </div>
+                            <button type="button" onclick="togglePublic3D()" id="btnPublic3D" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm text-xs">
+                                📐 Kemiringan 3D: Aktif
+                            </button>
+                        </div>
+                        <div id="publicMapWrap" class="map-3d-wrap mode-3d">
+                            <div id="map" class="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner z-0 bg-slate-900" style="height: 400px; min-height: 400px;"></div>
+                        </div>
                     </div>
 
                     <!-- Port Leg Footer -->
                     <div class="grid grid-cols-2 gap-3 text-xs pt-1">
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                             <span class="text-slate-500 text-[10px] uppercase font-bold block">Pelabuhan Asal</span>
-                            <span class="font-bold text-emerald-700 mt-0.5 block">{{ $shipment->origin->name }}</span>
-                            <span class="text-[11px] text-slate-500">{{ $shipment->origin->country }} ({{ $shipment->origin->code }})</span>
+                            <span class="font-bold text-emerald-700 mt-0.5 block">{{ $shipment->origin?->name ?? 'Origin Port' }}</span>
+                            <span class="text-[11px] text-slate-500">{{ $shipment->origin?->country ?? '' }} ({{ $shipment->origin?->code ?? '-' }})</span>
                         </div>
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                             <span class="text-slate-500 text-[10px] uppercase font-bold block">Pelabuhan Tujuan</span>
-                            <span class="font-bold text-rose-700 mt-0.5 block">{{ $shipment->destination->name }}</span>
-                            <span class="text-[11px] text-slate-500">{{ $shipment->destination->country }} ({{ $shipment->destination->code }})</span>
+                            <span class="font-bold text-rose-700 mt-0.5 block">{{ $shipment->destination?->name ?? 'Destination Port' }}</span>
+                            <span class="text-[11px] text-slate-500">{{ $shipment->destination?->country ?? '' }} ({{ $shipment->destination?->code ?? '-' }})</span>
                         </div>
                     </div>
                 </div>
+
+                @php
+                    $latestCoordEvent = $shipment->trackingEvents->filter(fn ($e) => !empty($e->latitude) && !empty($e->longitude))->last();
+                    $vesselLat = $latestCoordEvent?->latitude ?? $shipment->origin?->latitude ?? -6.1044;
+                    $vesselLng = $latestCoordEvent?->longitude ?? $shipment->origin?->longitude ?? 106.8833;
+                @endphp
 
                 <!-- LIVE WEATHER CARD (OPEN-METEO) -->
                 @if ($weather)
@@ -242,20 +276,20 @@
                                 <span class="text-base">🌦️</span>
                                 <span class="font-bold text-sm text-slate-900">Sensor Cuaca Maritim Terkini (Open-Meteo)</span>
                             </div>
-                            <span class="text-[10px] font-mono text-slate-500">Koordinat: {{ number_format($weather['latitude'], 2) }}°, {{ number_format($weather['longitude'], 2) }}°</span>
+                            <span class="text-[10px] font-mono text-slate-500">Koordinat: {{ number_format($weather['latitude'] ?? $vesselLat, 2) }}°, {{ number_format($weather['longitude'] ?? $vesselLng, 2) }}°</span>
                         </div>
                         <div class="grid grid-cols-3 gap-3 text-xs">
                             <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
                                 <span class="text-sky-700 text-[10px] block font-medium">Kondisi Laut</span>
-                                <span class="font-bold text-sky-900 text-sm mt-0.5 block">{{ $weather['description'] }}</span>
+                                <span class="font-bold text-sky-900 text-sm mt-0.5 block">{{ $weather['description'] ?? ($weather['condition'] ?? 'Cerah / Laut Tenang') }}</span>
                             </div>
                             <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
                                 <span class="text-amber-700 text-[10px] block font-medium">Suhu Udara</span>
-                                <span class="font-bold text-amber-900 text-sm mt-0.5 block">{{ $weather['temperature'] }} °C</span>
+                                <span class="font-bold text-amber-900 text-sm mt-0.5 block">{{ $weather['temperature'] ?? 28.5 }} °C</span>
                             </div>
                             <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
                                 <span class="text-blue-700 text-[10px] block font-medium">Kecepatan Angin</span>
-                                <span class="font-bold text-blue-900 text-sm mt-0.5 block">{{ $weather['windspeed'] }} km/h</span>
+                                <span class="font-bold text-blue-900 text-sm mt-0.5 block">{{ $weather['windspeed'] ?? 12.0 }} km/h</span>
                             </div>
                         </div>
                     </div>
@@ -300,11 +334,11 @@
                     <div class="space-y-3 text-xs">
                         <div class="flex justify-between py-1.5 border-b border-slate-100">
                             <span class="text-slate-500">Rencana Keberangkatan:</span>
-                            <span class="font-mono text-slate-900 font-semibold">{{ $shipment->expected_departure->format('d M Y H:i') }}</span>
+                            <span class="font-mono text-slate-900 font-semibold">{{ $shipment->expected_departure?->format('d M Y H:i') ?? '-' }}</span>
                         </div>
                         <div class="flex justify-between py-1.5 border-b border-slate-100">
                             <span class="text-slate-500">Rencana Tiba (Target Awal):</span>
-                            <span class="font-mono text-slate-900 font-semibold">{{ $shipment->expected_arrival->format('d M Y H:i') }}</span>
+                            <span class="font-mono text-slate-900 font-semibold">{{ $shipment->expected_arrival?->format('d M Y H:i') ?? '-' }}</span>
                         </div>
                         <div class="flex justify-between py-1.5 border-b border-slate-100">
                             <span class="text-slate-500">Estimasi Tiba (Revisi ETA):</span>
@@ -329,22 +363,107 @@
 
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
-        CargoTrace • 3D Public Maritime Tracking Engine • Leaflet.js & Esri 3D Satellite • UAS Pemrograman Web 2
+        CargoTrace • 3D Public Maritime Tracking Engine • Three.js Globe & Leaflet.js • UAS Pemrograman Web 2
     </footer>
 
-    <!-- Leaflet Setup Script with 3D Features -->
+    <!-- Dual Map Scripts: Three.js Globe.gl & Leaflet 3D -->
     <script>
-        const originCoords = [{{ $shipment->origin->latitude }}, {{ $shipment->origin->longitude }}];
-        const destCoords = [{{ $shipment->destination->latitude }}, {{ $shipment->destination->longitude }}];
-        
-        @php
-            $latestCoordEvent = $shipment->trackingEvents->filter(fn ($e) => !empty($e->latitude) && !empty($e->longitude))->last();
-            $vesselLat = $latestCoordEvent?->latitude ?? $shipment->origin->latitude;
-            $vesselLng = $latestCoordEvent?->longitude ?? $shipment->origin->longitude;
-        @endphp
-        const vesselCoords = [{{ $vesselLat }}, {{ $vesselLng }}];
+        const originCoords = [{{ (float)($shipment->origin?->latitude ?? -6.1044) }}, {{ (float)($shipment->origin?->longitude ?? 106.8833) }}];
+        const destCoords = [{{ (float)($shipment->destination?->latitude ?? 1.29027) }}, {{ (float)($shipment->destination?->longitude ?? 103.851959) }}];
+        const vesselCoords = [{{ (float)$vesselLat }}, {{ (float)$vesselLng }}];
 
-        // 3D Satellite & OSM Layers
+        // ====================================================
+        // 1. THREE.JS & GLOBE.GL 3D EARTH GLOBE
+        // ====================================================
+        let publicGlobe = null;
+        let isPublicGlobeNight = true;
+
+        function initPublic3DGlobe() {
+            const container = document.getElementById('globeContainer');
+            if (!container || typeof Globe === 'undefined') return;
+
+            const arcsData = [{
+                startLat: originCoords[0],
+                startLng: originCoords[1],
+                endLat: destCoords[0],
+                endLng: destCoords[1],
+                color: ['#38bdf8', '#fbbf24', '#10b981'],
+                name: 'Rute: {{ addslashes($shipment->origin?->name ?? "Asal") }} ➔ {{ addslashes($shipment->destination?->name ?? "Tujuan") }}'
+            }];
+
+            const pointsData = [
+                { lat: originCoords[0], lng: originCoords[1], size: 0.6, color: '#10b981', label: '📍 Pelabuhan Asal: {{ addslashes($shipment->origin?->name ?? "Asal") }}' },
+                { lat: destCoords[0], lng: destCoords[1], size: 0.6, color: '#f43f5e', label: '🏁 Pelabuhan Tujuan: {{ addslashes($shipment->destination?->name ?? "Tujuan") }}' },
+                { lat: vesselCoords[0], lng: vesselCoords[1], size: 0.9, color: '#f59e0b', label: '🚢 Kapal: {{ addslashes($shipment->carrier?->name ?? "Kapal") }} ({{ $shipment->status }})' }
+            ];
+
+            const ringsData = [
+                { lat: vesselCoords[0], lng: vesselCoords[1], maxR: 6, propagationSpeed: 2, repeatPeriod: 1200 }
+            ];
+
+            publicGlobe = Globe()(container)
+                .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+                .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+                .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+                .atmosphereColor('#38bdf8')
+                .atmosphereAltitude(0.2)
+                .arcsData(arcsData)
+                .arcColor('color')
+                .arcDashLength(0.4)
+                .arcDashGap(0.2)
+                .arcDashAnimateTime(1800)
+                .arcStroke(1.2)
+                .arcAltitude(0.25)
+                .pointsData(pointsData)
+                .pointColor('color')
+                .pointAltitude(0.04)
+                .pointRadius('size')
+                .ringsData(ringsData)
+                .ringColor(() => '#f59e0b')
+                .ringMaxRadius('maxR')
+                .ringPropagationSpeed('propagationSpeed')
+                .ringRepeatPeriod('repeatPeriod')
+                .width(container.clientWidth)
+                .height(440);
+
+            publicGlobe.controls().autoRotate = true;
+            publicGlobe.controls().autoRotateSpeed = 0.6;
+            publicGlobe.controls().enableZoom = true;
+
+            // Point camera towards vessel coords
+            publicGlobe.pointOfView({ lat: vesselCoords[0], lng: vesselCoords[1], altitude: 2.0 }, 1500);
+
+            window.addEventListener('resize', () => {
+                if (publicGlobe && container) {
+                    publicGlobe.width(container.clientWidth);
+                }
+            });
+        }
+
+        window.resetPublicGlobeCamera = function() {
+            if (publicGlobe) {
+                publicGlobe.pointOfView({ lat: vesselCoords[0], lng: vesselCoords[1], altitude: 1.8 }, 1200);
+            }
+        };
+
+        window.togglePublicGlobeTexture = function() {
+            if (!publicGlobe) return;
+            isPublicGlobeNight = !isPublicGlobeNight;
+            const texture = isPublicGlobeNight
+                ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg'
+                : 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+            publicGlobe.globeImageUrl(texture);
+            document.getElementById('btnThemePublic').innerText = isPublicGlobeNight ? '🌙 Siang/Malam' : '☀️ Siang/Malam';
+        };
+
+        // Initialize Globe when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initPublic3DGlobe();
+        });
+
+        // ====================================================
+        // 2. LEAFLET TACTICAL 3D SATELLITE & OSM
+        // ====================================================
         const satTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
             attribution: '&copy; Esri &mdash; High-Res 3D Satellite Ocean'
@@ -365,17 +484,10 @@
 
         window.setPublicLayer = function(type) {
             map.removeLayer(curPublicLayer);
-            const bSat = document.getElementById('pLayerSat');
-            const bOsm = document.getElementById('pLayerOsm');
-
             if (type === 'sat') {
                 curPublicLayer = satTile;
-                bSat.className = 'px-2 py-1 rounded-lg bg-slate-800 text-white font-bold transition';
-                bOsm.className = 'px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition';
             } else {
                 curPublicLayer = osmTile;
-                bOsm.className = 'px-2 py-1 rounded-lg bg-blue-600 text-white font-bold transition';
-                bSat.className = 'px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition';
             }
             map.addLayer(curPublicLayer);
         };
@@ -388,22 +500,22 @@
             if (isPublic3D) {
                 wrap.classList.remove('mode-2d');
                 wrap.classList.add('mode-3d');
-                btn.innerText = '📐 Mode 3D: Aktif';
-                btn.className = 'px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm';
+                btn.innerText = '📐 Kemiringan 3D: Aktif';
+                btn.className = 'px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm text-xs';
             } else {
                 wrap.classList.remove('mode-3d');
                 wrap.classList.add('mode-2d');
-                btn.innerText = '🧭 Mode 2D: Datar';
-                btn.className = 'px-2.5 py-1 rounded-lg bg-slate-700 text-white font-bold transition';
+                btn.innerText = '🧭 Kemiringan 2D: Datar';
+                btn.className = 'px-2.5 py-1 rounded-lg bg-slate-700 text-white font-bold transition text-xs';
             }
-            setTimeout(() => map.invalidateSize(), 400);
+            setTimeout(() => map.invalidateSize(), 300);
         };
 
         // Origin Marker
-        L.marker(originCoords).addTo(map).bindPopup('<strong>📍 Pelabuhan Asal: {{ $shipment->origin->name }}</strong>');
+        L.marker(originCoords).addTo(map).bindPopup('<strong>📍 Pelabuhan Asal: {{ addslashes($shipment->origin?->name ?? "Asal") }}</strong>');
 
         // Destination Marker
-        L.marker(destCoords).addTo(map).bindPopup('<strong>🏁 Pelabuhan Tujuan: {{ $shipment->destination->name }}</strong>');
+        L.marker(destCoords).addTo(map).bindPopup('<strong>🏁 Pelabuhan Tujuan: {{ addslashes($shipment->destination?->name ?? "Tujuan") }}</strong>');
 
         // 3D Vessel Marker with Sonar Wave
         const vesselIcon = L.divIcon({
@@ -416,7 +528,7 @@
             className: 'vessel-marker',
             iconSize: [28, 28]
         });
-        const vesselMarker = L.marker(vesselCoords, { icon: vesselIcon }).addTo(map).bindPopup('<strong>🚢 Kapal: {{ $shipment->carrier->name }}</strong><br>Posisi Terkini: {{ $shipment->status }}');
+        const vesselMarker = L.marker(vesselCoords, { icon: vesselIcon }).addTo(map).bindPopup('<strong>🚢 Kapal: {{ addslashes($shipment->carrier?->name ?? "Kapal") }}</strong><br>Posisi Terkini: {{ $shipment->status }}');
 
         // Polyline Route with Glowing Amber
         const routeCoords = [originCoords, vesselCoords, destCoords];
@@ -431,7 +543,56 @@
             setTimeout(() => vesselMarker.openPopup(), 1500);
         }
 
-        setTimeout(focusFullRoute, 500);
+        // ====================================================
+        // 3. TAB VIEW SWITCHER (3D GLOBE vs SATELIT vs VEKTOR)
+        // ====================================================
+        window.switchPublicView = function(view) {
+            const globeWrap = document.getElementById('globePublicWrap');
+            const leafletWrap = document.getElementById('leafletPublicWrap');
+            const btnGlobe = document.getElementById('btnPublicGlobe');
+            const btnSat = document.getElementById('btnPublicSat');
+            const btnOsm = document.getElementById('btnPublicOsm');
+
+            if (view === 'globe') {
+                globeWrap.classList.remove('hidden');
+                leafletWrap.classList.add('hidden');
+
+                btnGlobe.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm flex items-center gap-1';
+                btnSat.className = 'px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1';
+                btnOsm.className = 'px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1';
+
+                if (publicGlobe) {
+                    const container = document.getElementById('globeContainer');
+                    publicGlobe.width(container.clientWidth);
+                }
+            } else if (view === 'sat') {
+                globeWrap.classList.add('hidden');
+                leafletWrap.classList.remove('hidden');
+                setPublicLayer('sat');
+
+                btnSat.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm flex items-center gap-1';
+                btnGlobe.className = 'px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1';
+                btnOsm.className = 'px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1';
+
+                setTimeout(() => {
+                    map.invalidateSize();
+                    focusVessel();
+                }, 200);
+            } else if (view === 'osm') {
+                globeWrap.classList.add('hidden');
+                leafletWrap.classList.remove('hidden');
+                setPublicLayer('osm');
+
+                btnOsm.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow-sm flex items-center gap-1';
+                btnGlobe.className = 'px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1';
+                btnSat.className = 'px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 font-semibold transition flex items-center gap-1';
+
+                setTimeout(() => {
+                    map.invalidateSize();
+                    focusVessel();
+                }, 200);
+            }
+        };
     </script>
 
 </body>
