@@ -132,4 +132,30 @@ class PublicTrackingTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('CT-2026-001');
     }
+
+    public function test_public_print_receipt_page_loads_successfully(): void
+    {
+        Shipment::create([
+            'shipment_number'    => 'CT-2026-001',
+            'carrier_id'         => $this->carrier->id,
+            'origin_id'          => $this->origin->id,
+            'destination_id'     => $this->destination->id,
+            'user_id'            => $this->customer->id,
+            'status'             => 'IN_TRANSIT',
+            'cargo_type'         => 'Dry Container 40ft',
+            'weight_kg'          => 12000,
+            'volume_cbm'         => 65,
+            'freight_cost'       => 25000000,
+            'payment_status'     => 'PAID',
+            'expected_departure' => now()->subDays(2),
+            'expected_arrival'   => now()->addDays(3),
+            'estimated_arrival'  => now()->addDays(3),
+        ]);
+
+        $response = $this->get('/track/CT-2026-001/print');
+
+        $response->assertStatus(200);
+        $response->assertSee('CT-2026-001');
+        $response->assertSee('Dokumen Elektronik Bukti Muat');
+    }
 }

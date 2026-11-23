@@ -153,6 +153,10 @@
                         Belum Dibayar
                     </span>
                 @endif
+                <a href="{{ route('shipments.public-print', $shipment->shipment_number) }}" target="_blank" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition shadow-sm flex items-center gap-1.5">
+                    <span>🖨️</span>
+                    <span>Cetak Resi</span>
+                </a>
             </div>
         </div>
 

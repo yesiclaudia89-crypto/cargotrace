@@ -158,9 +158,15 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="{{ route('shipments.show', $shipment) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs rounded-lg transition border border-blue-200">
-                                            Detail & Peta ➔
-                                        </a>
+                                        <div class="flex items-center justify-end gap-1.5">
+                                            <a href="{{ route('shipments.print', $shipment) }}" target="_blank" title="Cetak Resi Resmi (Waybill)" class="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition border border-slate-300 flex items-center gap-1">
+                                                <span>🖨️</span>
+                                                <span class="hidden sm:inline">Cetak</span>
+                                            </a>
+                                            <a href="{{ route('shipments.show', $shipment) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs rounded-lg transition border border-blue-200">
+                                                Detail ➔
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

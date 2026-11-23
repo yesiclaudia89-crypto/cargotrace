@@ -12,8 +12,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Public Tracking (Slide 10 - No login required)
+// Public Tracking & Cetak Resi Publik (Slide 10 - No login required)
 Route::get('/track/{tracking_number?}', [ShipmentController::class, 'publicTrack'])->name('shipments.public-track');
+Route::get('/track/{tracking_number}/print', [ShipmentController::class, 'publicPrintReceipt'])->name('shipments.public-print');
 
 // 2. Rute yang Membutuhkan Login (Auth)
 Route::middleware('auth')->group(function () {
@@ -31,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create')->middleware('role:admin,operator');
     Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store')->middleware('role:admin,operator');
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+    Route::get('/shipments/{shipment}/print', [ShipmentController::class, 'printReceipt'])->name('shipments.print');
 
     // Tracking Event & Kendala Exception (Hanya Admin & Operator)
     Route::post('/shipments/{shipment}/tracking', [ShipmentController::class, 'storeTracking'])->name('shipments.tracking.store')->middleware('role:admin,operator');

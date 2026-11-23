@@ -41,6 +41,11 @@
                         BELUM DIBAYAR (UNPAID)
                     </span>
                 @endif
+
+                <a href="{{ route('shipments.print', $shipment) }}" target="_blank" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5">
+                    <span>🖨️</span>
+                    <span>Cetak Resi Kargo</span>
+                </a>
             </div>
         </div>
     </x-slot>

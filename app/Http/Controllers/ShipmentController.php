@@ -176,6 +176,64 @@ class ShipmentController extends Controller
         return view('shipments.public-track', compact('shipment', 'weather'));
     }
 
+    /**
+     * Print Official Maritime Waybill / Bill of Lading (Auth User)
+     */
+    public function printReceipt(Shipment $shipment): View
+    {
+        $user = auth()->user();
+        if ($user && $user->isCustomer() && $shipment->user_id !== $user->id) {
+            abort(403, 'Akses Ditolak: Anda hanya diizinkan mencetak resi kargo milik perusahaan Anda sendiri.');
+        }
+
+        $shipment->load([
+            'carrier',
+            'origin',
+            'destination',
+            'customer',
+            'items',
+            'trackingEvents' => fn ($q) => $q->orderBy('event_time', 'asc'),
+        ]);
+
+        return view('shipments.print', compact('shipment'));
+    }
+
+    /**
+     * Print Public Maritime Waybill / Bill of Lading (No Auth Required)
+     */
+    public function publicPrintReceipt(Request $request, ?string $tracking_number = null): View
+    {
+        $rawQuery = $tracking_number 
+            ?? $request->query('tracking_number') 
+            ?? $request->query('number') 
+            ?? $request->query('search') 
+            ?? 'CT-2026-001';
+
+        $query = trim((string) $rawQuery);
+
+        $shipment = Shipment::where('shipment_number', $query)->first();
+
+        if (! $shipment) {
+            $shipment = Shipment::where('shipment_number', 'like', "%{$query}%")->first() 
+                ?? Shipment::first();
+        }
+
+        if (! $shipment) {
+            abort(404, 'Data kargo tidak ditemukan di sistem.');
+        }
+
+        $shipment->load([
+            'carrier',
+            'origin',
+            'destination',
+            'customer',
+            'items',
+            'trackingEvents' => fn ($q) => $q->orderBy('event_time', 'asc'),
+        ]);
+
+        return view('shipments.print', compact('shipment'));
+    }
+
     public function storeTracking(Request $request, Shipment $shipment): RedirectResponse
     {
         $validated = $request->validate([
