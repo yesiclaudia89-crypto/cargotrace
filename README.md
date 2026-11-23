@@ -32,7 +32,6 @@
 7. [Panduan Instalasi & Menjalankan di Lokal](#-panduan-instalasi--menjalankan-di-lokal)
 8. [Dokumentasi REST API (Sanctum)](#-dokumentasi-rest-api-sanctum)
 9. [Hasil Pengujian Otomatis (Automated Tests)](#-hasil-pengujian-otomatis-automated-tests)
-10. [Panduan Menjawab Pertanyaan Dosen](#-panduan-menjawab-pertanyaan-dosen)
 
 ---
 
@@ -346,17 +345,6 @@ Integritas arsitektur logika sistem diuji secara otomatis menggunakan **PHPUnit 
   Tests:    44 passed (122 assertions)
   Duration: 8.84s
 ```
-
----
-
-## 🎓 Panduan Menjawab Pertanyaan Dosen
-
-| Pertanyaan Dosen | Jawaban Teknis Singkat & Tepat |
-|---|---|
-| **Kenapa memakai Three.js 3D Globe dan Leaflet?** | Rute pelayaran laut samudra internasional mengikuti kelengkungan bumi sejati (*Great Circle Arc*), sehingga 3D Globe WebGL Three.js memberikan visualisasi spasial yang sangat akurat. Selain itu, Leaflet dan Open-Meteo 100% open-source dan bebas lisensi berbayar. |
-| **Bagaimana cara sistem mendeteksi delay?** | Menggunakan formula matematika di `DelayCalculationService.php` yang membandingkan selisih detik antara ETA aktual dan ETA rencana awal, lalu otomatis mengklasifikasikan status keterlambatannya. |
-| **Bagaimana jika API cuaca Open-Meteo mati?** | Sistem menerapkan prinsip *Graceful Degradation* dengan batas timeout 4 detik dan *Safe Fallback Data* bawaan maritim, sehingga tampilan web pelacakan tetap berjalan lancar dan tidak pernah menampilkan layar error. |
-| **Bagaimana integritas status kargo dijaga?** | Menggunakan pola *Finite State Machine (FSM)* pada model `Shipment.php` (`canTransitionTo`), yang mengunci transisi agar tidak bisa melompat sembarangan dan diuji dengan pengujian unit otomatis. |
 
 ---
 
