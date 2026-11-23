@@ -599,8 +599,10 @@
                 attributionControl: false
             }).setView([-3.20, 107.50], 5);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18
+            // 3D Satellite Layer (Esri World Imagery)
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 18,
+                attribution: '&copy; Esri &mdash; High-Res 3D Satellite Ocean'
             }).addTo(heroMap);
 
             // Select initial shipment CT-2026-001
@@ -647,20 +649,26 @@
             // Destination Marker
             destMarker = L.marker(data.destCoords).addTo(heroMap).bindPopup('<b>Pelabuhan Tujuan:</b><br>' + data.dest);
 
-            // Custom Vessel Icon
+            // Custom 3D Vessel Icon with Radar Ring
             const vesselIcon = L.divIcon({
-                html: '<div style="font-size:26px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35)); transform: translate(-13px, -13px);">🚢</div>',
+                html: `
+                    <div class="relative" style="transform: translate(-14px, -14px);">
+                        <div style="position: absolute; top: -8px; left: -8px; width: 44px; height: 44px; border-radius: 50%; background: rgba(245, 158, 11, 0.35); border: 2px solid #f59e0b; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; pointer-events: none;"></div>
+                        <div style="font-size:30px; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.7)); position: relative; z-index: 2;">🚢</div>
+                    </div>
+                `,
                 className: 'hero-vessel-marker',
-                iconSize: [26, 26]
+                iconSize: [28, 28]
             });
             vesselMarker = L.marker(data.vesselCoords, { icon: vesselIcon }).addTo(heroMap).bindPopup('<b>Kapal:</b> ' + data.vessel + '<br><b>Status:</b> ' + data.status);
 
-            // Route Polyline
+            // Route Polyline with Animated Sea Lane Glow
             const routePoints = [data.originCoords, data.vesselCoords, data.destCoords];
             routePolyline = L.polyline(routePoints, {
-                color: '#2563eb',
-                weight: 3.5,
-                dashArray: '5, 5'
+                color: '#fbbf24',
+                weight: 4,
+                dashArray: '6, 8',
+                opacity: 0.95
             }).addTo(heroMap);
 
             // Fit bounds smoothly
