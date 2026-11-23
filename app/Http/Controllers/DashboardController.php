@@ -15,7 +15,7 @@ class DashboardController extends Controller
 
         // 1. Ambil data kargo (Jika role Customer, hanya tampilkan miliknya - Slide 5)
         $shipmentsQuery = Shipment::query()
-            ->with(['carrier', 'origin', 'destination', 'customer']);
+            ->with(['carrier', 'origin', 'destination', 'customer', 'trackingEvents', 'exceptions']);
 
         if ($user->isCustomer()) {
             $shipmentsQuery->where('user_id', $user->id);
@@ -36,8 +36,8 @@ class DashboardController extends Controller
         }
         $openExceptionsCount = $exceptionsQuery->where('status', '!=', 'RESOLVED')->count();
 
-        // 4. Ambil 5 kargo terbaru untuk tabel ringkasan
-        $recentShipments = (clone $shipmentsQuery)->latest()->take(5)->get();
+        // 4. Ambil semua kargo untuk peta dan tabel ringkasan
+        $recentShipments = (clone $shipmentsQuery)->latest()->take(10)->get();
 
         return view('dashboard', compact(
             'totalShipments',

@@ -20,6 +20,10 @@
         🚢 {{ __('Shipments') }}
     </x-nav-link>
 
+    <x-nav-link :href="route('shipments.public-track', 'CT-2026-001')" :active="request()->routeIs('shipments.public-track')">
+        🌐 {{ __('Pelacakan Publik') }}
+    </x-nav-link>
+
     @if (Auth::user()->isAdmin())
         <x-nav-link :href="route('carriers.index')" :active="request()->routeIs('carriers.*')">
             🏢 {{ __('Carriers') }}
